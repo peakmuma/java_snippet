@@ -13,13 +13,33 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.7</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-access</artifactId>
+            <version>1.1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.7</version>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins> 
             <plugin> 
                 <!-- mvn dependency:resolve  this command used to download jar-->
-                <!-- mvn dependency:copy-dependencies   this commant used to copy jar-->
+                <!-- mvn dependency:copy-dependencies   this command used to copy jar-->
                 <groupId>org.apache.maven.plugins</groupId>  
                 <artifactId>maven-dependency-plugin</artifactId>  
 
