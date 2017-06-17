@@ -1,4 +1,4 @@
-package me.peak.httpserver.common;
+package me.peak.httpserver.sockethandler;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

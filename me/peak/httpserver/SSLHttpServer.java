@@ -1,6 +1,6 @@
 package me.peak.httpserver;
 
-import me.peak.httpserver.common.SocketHandler;
+import me.peak.httpserver.sockethandler.SocketHandler;
 
 import javax.net.ssl.*;
 import java.io.FileInputStream;

@@ -1,7 +1,6 @@
 package me.peak.httpserver;
 
-import me.peak.httpserver.common.KeepAliveSocketHandler;
-import me.peak.httpserver.common.SwitchSocketHandler;
+import me.peak.httpserver.sockethandler.SwitchSocketHandler;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
