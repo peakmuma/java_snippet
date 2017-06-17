@@ -1,5 +1,8 @@
 package me.peak.httpserver.sockethandler;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -15,12 +18,14 @@ public class SwitchSocketHandler implements Runnable {
 
     private SocketChannel switchChannel;
 
+    Logger logger = LoggerFactory.getLogger(SwitchSocketHandler.class);
+
     public SwitchSocketHandler(SocketChannel socketChannel) throws IOException {
         this.clientChannel = socketChannel;
-        this.switchChannel = SocketChannel.open(new InetSocketAddress("127.0.0.1", 9080));
+        this.switchChannel = SocketChannel.open(new InetSocketAddress("127.0.0.1", 8080));
         this.clientChannel.configureBlocking(false);
         this.switchChannel.configureBlocking(false);
-        System.out.println("-----connect server success----");
+        logger.debug("connect server success");
     }
 
     @Override
@@ -31,14 +36,10 @@ public class SwitchSocketHandler implements Runnable {
             SelectionKey switchKey = switchChannel.register(selector, SelectionKey.OP_READ);
             ByteBuffer buffer = ByteBuffer.allocate(8192);
             while (true) {
-                long before = System.nanoTime();
-                int readChannels = selector.select();
-                long after = System.nanoTime();
-                System.out.println("--------select time is: " + (after -  before)/1000000 );
-                System.out.println("select result is " + readChannels);
+                int readChannels = selector.select(60*1000);
                 if(readChannels == 0){
-                    System.out.println("select result is 0 ,the client channel status is " + clientChannel.isConnected());
-                    System.out.println("select result is 0 ,the switch channel status is " + switchChannel.isConnected());
+                    logger.debug("select result is 0 ,the client channel status is " + clientChannel.isConnected());
+                    logger.debug("select result is 0 ,the switch channel status is " + switchChannel.isConnected());
                     break;
                 }
                 Set<SelectionKey> set = selector.selectedKeys();
@@ -48,10 +49,14 @@ public class SwitchSocketHandler implements Runnable {
                     if(key==clientKey && key.isReadable()){
                         buffer.clear();
                         int read = clientChannel.read(buffer);
+                        if(read == -1){
+                            clientChannel.close();
+                            logger.debug("client channel has been closed --------------------");
+                        }
                         while(read > 0){
                             buffer.flip();
                             switchChannel.write(buffer);
-                            System.out.println("-------------request------------");
+                            logger.debug("-------------request------------");
                             printBuffer(buffer.array(),read);
                             buffer.clear();
                             read = clientChannel.read(buffer);
@@ -59,16 +64,20 @@ public class SwitchSocketHandler implements Runnable {
                     }else if(key==switchKey && key.isReadable()){
                         buffer.clear();
                         int read = switchChannel.read(buffer);
+                        if(read == -1){
+                            switchChannel.close();
+                            logger.debug("switch channel has been closed --------------------");
+                        }
                         while(read>0){
                             buffer.flip();
 //							printBuffer(buffer.array(),read);
                             clientChannel.write(buffer);
-                            System.out.println("-------------response------------length:" + read);
+                            logger.debug("-------------response------------length:" + read);
                             buffer.clear();
                             read = switchChannel.read(buffer);
                         }
                     }else{
-                        System.out.println("==============something wrong===========");
+                        logger.debug("==============something wrong===========");
                     }
                     iterator.remove();
                 }
@@ -77,10 +86,14 @@ public class SwitchSocketHandler implements Runnable {
             e.printStackTrace();
         } finally{
             try {
-                clientChannel.close();
-                System.out.println("------------client chaneel close --------------------");
-                switchChannel.close();
-                System.out.println("------------switch channel close --------------------");
+                if(clientChannel.isConnected()) {
+                    clientChannel.close();
+                    logger.debug("------------client channel close --------------------");
+                }
+                if(switchChannel.isConnected()) {
+                    switchChannel.close();
+                    logger.debug("------------switch channel close --------------------");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
