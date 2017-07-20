@@ -28,7 +28,6 @@ public class SwitchSocketHandler implements Runnable {
         logger.debug("connect server success");
     }
 
-    @Override
     public void run() {
         try {
             Selector selector = Selector.open();
