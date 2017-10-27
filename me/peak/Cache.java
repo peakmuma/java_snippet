@@ -8,5 +8,4 @@ import java.util.TreeMap;
  */
 public class Cache {
     private LinkedHashMap hashMap;
-    TreeMap;
 }
