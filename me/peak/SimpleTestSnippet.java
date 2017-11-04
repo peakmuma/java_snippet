@@ -7,8 +7,9 @@ import java.util.Objects;
  */
 public class SimpleTestSnippet {
     public static void main(String[] args){
-        classTypeTest();
-        stringInternTest();
+//        classTypeTest();
+//        stringInternTest();
+        threadStatusTest();
     }
 
     public static void classTypeTest(){
@@ -22,5 +23,30 @@ public class SimpleTestSnippet {
         System.out.println(s1==s2);//false
         s2=s2.intern();
         System.out.println(s1==s2);//true
+    }
+
+    /**
+     the result:
+     before start, thread state is: NEW
+     after start, thread state is: RUNNABLE
+     thread run method over
+     start over, thread state is: TERMINATED
+     */
+    public static void threadStatusTest(){
+        try {
+			Thread t = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					System.out.println("thread run method over");
+				}
+			});
+            System.out.println("before start, thread state is: " + t.getState().name());
+            t.start();
+            System.out.println("after start, thread state is: " + t.getState().name());
+            Thread.sleep(1000);
+            System.out.println("start over, thread state is: " + t.getState().name());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
