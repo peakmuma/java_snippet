@@ -18,7 +18,11 @@ public class NettyServer {
             e.printStackTrace();
         }
     }
-
+    //io是啥, nio又是啥
+    //nio比bio好在什么地方, netty又比nio好在什么地方. 用bio,nio,netty分别提供服务, 发送大量请求, 看哪个先处理完.
+    //如何使用netty进行开发, pom引入jar包, 自己写handler, 如何拼接handler, 现有的大项目是如何使用netty的.
+    //netty的运行模型, 如何处理连接, 接收到消息如何处理. 这个是讲解的核心, 有哪些思想可以借鉴.
+    //netty的启动过程
     public void start() throws InterruptedException {
         int port = 9060;
         NioEventLoopGroup group = new NioEventLoopGroup();

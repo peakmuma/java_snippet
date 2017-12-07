@@ -10,8 +10,9 @@ import java.nio.charset.Charset;
 public class NettyClient {
 
     public static void main(String[] args) {
+        Socket socket = null;
         try {
-            Socket socket = new Socket("127.0.0.1",9060);
+            socket = new Socket("127.0.0.1",9060);
             //获取键盘输入
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
             OutputStream out = socket.getOutputStream();
@@ -30,7 +31,13 @@ public class NettyClient {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }
