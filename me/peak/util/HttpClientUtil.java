@@ -21,7 +21,7 @@ import static org.apache.http.impl.client.HttpClients.*;
 public class HttpClientUtil {
 
 	private RequestConfig requestConfig = RequestConfig.custom()
-			.setSocketTimeout(15000)
+			.setSocketTimeout(5000)
 			.setConnectTimeout(15000)
 			.setConnectionRequestTimeout(15000)
 			.build();
