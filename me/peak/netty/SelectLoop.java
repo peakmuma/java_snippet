@@ -13,7 +13,6 @@ public class SelectLoop implements  Runnable{
 
     private Selector selector;
 
-
     public SelectLoop(Selector selector) {
         this.selector = selector;
     }
@@ -32,7 +31,7 @@ public class SelectLoop implements  Runnable{
                     SelectionKey key = iterator.next();
                     if (key.isReadable()) {
                         SocketChannel channel = (SocketChannel) key.channel();
-                        //TODO
+                        new Thread(new ChannelHandler(channel)).start();
                         iterator.remove();
                     }
                 }
