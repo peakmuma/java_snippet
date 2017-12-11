@@ -9,6 +9,8 @@ import java.net.Socket;
 
 public class BIOServer {
 
+    static boolean serverAlive = true;
+
     static Logger logger = LoggerFactory.getLogger(BIOServer.class);
 
     public static void main(String[] args) {
@@ -20,8 +22,10 @@ public class BIOServer {
         try {
             serverSocket = new ServerSocket(port);
             logger.info("listening port {}", port);
-            Socket socket = serverSocket.accept();
-            new Thread(new SocketHandler(socket)).start();
+            while (serverAlive) {
+                Socket socket = serverSocket.accept();
+                new Thread(new SocketHandler(socket)).start();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -37,13 +41,13 @@ public class BIOServer {
     }
 }
 
-        /*我之前的NIO写法是不正确的， 只是用到了select， 并没有很好的实现一个线程监控多个socket
+        /*我之前的NIO写法是不正确的， 只是用到了select， 并没有很好的实现一个线程监控多个channel
         这个需要实现一下，接收到新请求之后应该注册select上， 后续就交给select去处理了。
         如果有精力的话， 还需要研究一下如何维护多个select，并且保持它们监听数量的平衡。
         */
 
         /*
-        目前我对inputStream里的read方法理解也不够深刻。read返回一个-1的时候， 到底对方是发送完了一个包，还是已经关闭
+        目前我对inputStream里的read方法理解不够深刻。read返回一个-1的时候， 到底对方是发送完了一个包，还是已经关闭
         连接。我感觉按文档说的来， 很有可能是后者， 如果是前者的话， read方法并不会返回， 而是阻塞，
         查了一些资料，-1确实代表了对方关闭连接。 那么问题就变成了如果确定包的边界， 因为流的形式，有数据就会获取到。
         这个就是TCP的粘包问题，基本上办法有三种：固定长度，特殊字符分割，加一个头部，头部里面有字段表示后续包长度
