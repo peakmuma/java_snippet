@@ -16,20 +16,23 @@ public class ChannelHandler implements Runnable{
 	public void run() {
 		ByteBuffer buffer = ByteBuffer.allocate(128);
 		try {
-			int res = 0;
+			int res;
 			StringBuilder sb = new StringBuilder();
 			buffer.clear();
 			System.out.println("---------start get message");
 			while ( (res = socketChannel.read(buffer)) > 0 ) {
 				System.out.println("---------get message length " + res);
-				System.out.println(res == buffer.limit());
-				for (int i=0; i < res; i++) {
-					System.out.println(buffer.position());
-					sb.append(buffer.get());
+				buffer.flip();
+				while (buffer.position() < buffer.limit()) {//todo < or <= ???
+					sb.append((char)buffer.get());
 				}
 				System.out.println(sb.toString());
 				buffer.clear();
 			}
+			if (res == -1) {
+				socketChannel.close();
+			}
+			System.out.println("---------get message over");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

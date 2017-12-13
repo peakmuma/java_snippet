@@ -4,10 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -27,24 +27,23 @@ public class SelectLoop implements  Runnable{
 
     @Override
     public void run() {
-        while (true) {
+    	int i = 0;
+        while (NIOServer.serverAlive && i++ < 10) {
             try {
                 int readChannels = selector.select();
-                System.out.println("---------------read channels" + readChannels);
+                System.out.println("-------read channels------" + readChannels);
                 SocketChannel channel;
-                while ( (channel = channelQueue.poll()) != null ) {
-                    channel.register(selector, SelectionKey.OP_READ);
-                }
                 Set<SelectionKey> set = selector.selectedKeys();
-                Iterator<SelectionKey> iterator = set.iterator();
-                while (iterator.hasNext()) {
-                    SelectionKey key = iterator.next();
+                for (SelectionKey key : set) {
                     if (key.isReadable()) {
                         channel = (SocketChannel) key.channel();
-                        System.out.println("--------get channel, the remote port is " + channel.socket().getPort());
-                        new Thread(new ChannelHandler(channel)).start();
-                        iterator.remove();
+						readFromChannel(channel);
+//						new Thread(new ChannelHandler(channel)).start();
                     }
+                    set.remove(key);
+                }
+                while ( (channel = channelQueue.poll()) != null ) {
+                    channel.register(selector, SelectionKey.OP_READ);
                 }
             }catch (IOException e) {
                 e.printStackTrace();
@@ -54,5 +53,31 @@ public class SelectLoop implements  Runnable{
 
     public boolean addChannel (SocketChannel channel) {
         return channelQueue.offer(channel);
+    }
+
+
+    public void readFromChannel(SocketChannel socketChannel) {
+        ByteBuffer buffer = ByteBuffer.allocate(128);
+        try {
+            int res;
+            StringBuilder sb = new StringBuilder();
+            buffer.clear();
+            System.out.println("---------start get message");
+            while ( (res = socketChannel.read(buffer)) > 0 ) {
+                System.out.println("---------get message length " + res);
+                buffer.flip();
+                while (buffer.position() < buffer.limit()) {//todo < or <= ???
+                    sb.append((char)buffer.get());
+                }
+                System.out.println(sb.toString());
+                buffer.clear();
+            }
+            if (res == -1) {
+                socketChannel.close();
+            }
+            System.out.println("---------get message over");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
