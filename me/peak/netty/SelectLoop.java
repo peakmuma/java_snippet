@@ -1,15 +1,18 @@
 package me.peak.netty;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
-import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
 public class SelectLoop implements  Runnable{
+
+    private static Logger logger = LoggerFactory.getLogger(SelectLoop.class);
 
     private Selector selector;
 
