@@ -22,15 +22,17 @@ public class NIOServer {
             serverSocketChannel = ServerSocketChannel.open();
             serverSocketChannel.socket().bind(new InetSocketAddress(port));
             Selector selector = Selector.open();
-            new Thread(new SelectLoop(selector)).start();
+            SelectLoop selectLoop = new SelectLoop(selector);
+            new Thread(selectLoop).start();
             while(serverAlive){
                 SocketChannel socketChannel = serverSocketChannel.accept();
                 socketChannel.configureBlocking(false);
-                socketChannel.register(selector, SelectionKey.OP_READ);
+                selectLoop.addChannel(socketChannel);  //todo 可改进，检查一下返回值，如果数量太多，需要新建几个selectLoop
+                selector.wakeup();
             }
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Start server failed, port occupied!");
+            System.err.println("Start server failed!");
         } finally {
             if (serverSocketChannel != null) {
                 try {
