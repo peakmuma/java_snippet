@@ -33,6 +33,7 @@ public class Client implements Runnable {
 			InputStream in = socket.getInputStream();
 			StringBuilder sb = new StringBuilder();
 			int res;
+			log.info("start read");
 			while ((res = in.read(bytes)) != -1) {
 				for (int i = 0; i < res; i++) {
 					if (bytes[i] != (byte) 4) {
@@ -42,6 +43,7 @@ public class Client implements Runnable {
 						sb.setLength(0);
 					}
 				}
+				log.info("start read again");
 			}
 			log.info("read method return -1");
 		} catch (SocketTimeoutException e) {
