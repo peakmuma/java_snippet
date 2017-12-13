@@ -15,9 +15,9 @@ public class Client implements Runnable {
     //疑问点:socket的close是否会引起inputStream和outStream的断开
     //out.close(), 会发起一个断开连接的请求.
     public static void main(String[] args) {
-//    	for (int j=0; j<10; j++ ) {
+    	for (int j=0; j<10; j++ ) {
     		new Thread(new Client()).start();
-//		}
+		}
     }
 
 	@Override
@@ -26,7 +26,7 @@ public class Client implements Runnable {
 		try {
 			socket = new Socket("127.0.0.1", 9060); //建立TCP连接的过程。
 			socket.setSoTimeout(15000);
-			for (int i = 0; i < 1; i++) {
+			for (int i = 0; i < 2; i++) {
 				sendMessage(socket, "the No." + i + " message");
 			}
 			byte[] bytes = new byte[1024];
