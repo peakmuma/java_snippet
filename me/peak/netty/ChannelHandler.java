@@ -19,7 +19,9 @@ public class ChannelHandler implements Runnable{
 			int res = 0;
 			StringBuilder sb = new StringBuilder();
 			buffer.clear();
+			System.out.println("---------start get message");
 			while ( (res = socketChannel.read(buffer)) > 0 ) {
+				System.out.println("---------get message length " + res);
 				System.out.println(res == buffer.limit());
 				for (int i=0; i < res; i++) {
 					System.out.println(buffer.position());
