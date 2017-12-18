@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -34,13 +35,15 @@ public class SelectLoop implements  Runnable{
                 System.out.println("-------read channels------" + readChannels);
                 SocketChannel channel;
                 Set<SelectionKey> set = selector.selectedKeys();
-                for (SelectionKey key : set) {
+                Iterator<SelectionKey> iterable = set.iterator();
+                while (iterable.hasNext()){
+                    SelectionKey key = iterable.next();
                     if (key.isReadable()) {
                         channel = (SocketChannel) key.channel();
 						readFromChannel(channel);
 //						new Thread(new ChannelHandler(channel)).start();
                     }
-                    set.remove(key);
+                    iterable.remove();
                 }
                 while ( (channel = channelQueue.poll()) != null ) {
                     channel.register(selector, SelectionKey.OP_READ);
