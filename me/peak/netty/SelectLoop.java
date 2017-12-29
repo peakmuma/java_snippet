@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
@@ -28,8 +29,7 @@ public class SelectLoop implements  Runnable{
 
     @Override
     public void run() {
-    	int i = 0;
-        while (NIOServer.serverAlive && i++ < 10) {
+        while (NIOServer.serverAlive) {
             try {
                 int readChannels = selector.select();
                 System.out.println("-------read channels------" + readChannels);
@@ -38,6 +38,12 @@ public class SelectLoop implements  Runnable{
                 Iterator<SelectionKey> iterable = set.iterator();
                 while (iterable.hasNext()){
                     SelectionKey key = iterable.next();
+                    if (key.isAcceptable()) {
+                        ServerSocketChannel serverSocketChannel = (ServerSocketChannel)key.channel();
+                        channel = serverSocketChannel.accept();
+                        channel.configureBlocking(false);
+                        channel.register(selector, SelectionKey.OP_READ);
+                    }
                     if (key.isReadable()) {
                         channel = (SocketChannel) key.channel();
 						readFromChannel(channel);

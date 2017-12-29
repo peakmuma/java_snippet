@@ -2,6 +2,7 @@ package me.peak.netty;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -19,16 +20,20 @@ public class NIOServer {
         ServerSocketChannel serverSocketChannel = null;
         try {
             serverSocketChannel = ServerSocketChannel.open();
-            serverSocketChannel.socket().bind(new InetSocketAddress(port));
+            serverSocketChannel.configureBlocking(false);
             Selector selector = Selector.open();
+            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+            serverSocketChannel.socket().bind(new InetSocketAddress(port));
             SelectLoop selectLoop = new SelectLoop(selector);
-            new Thread(selectLoop).start();
+            new Thread(selectLoop,"SelectLoop").start();
             while(serverAlive){
-                SocketChannel socketChannel = serverSocketChannel.accept();
-                socketChannel.configureBlocking(false);
-                //todo 可改进，检查一下返回值，如果返回false, 说明数量太多，需要新建几个selectLoop
-                selectLoop.addChannel(socketChannel);
-                selector.wakeup();
+            	Thread.yield();
+//                SocketChannel socketChannel = serverSocketChannel.accept();
+//                socketChannel.configureBlocking(false);
+//                //todo 可改进，检查一下返回值，如果返回false, 说明数量太多，需要新建几个selectLoop
+//                selectLoop.addChannel(socketChannel);
+//
+//                selector.wakeup();
             }
         } catch (IOException e) {
             e.printStackTrace();
