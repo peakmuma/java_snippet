@@ -17,7 +17,12 @@ public class ReceiveMessageHandler extends ChannelInboundHandlerAdapter{
         System.out.println("receive msg is :" + buf.toString(Charset.forName("utf-8")));
     }
 
-    public void exceptionCaught(ChannelHandlerContext ctx,Throwable cause) {
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("read complete");
+    }
+
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();//捕捉异常信息
         ctx.close();//出现异常时关闭channel
     }
