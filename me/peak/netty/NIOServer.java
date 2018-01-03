@@ -24,7 +24,7 @@ public class NIOServer {
             Selector selector = Selector.open();
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
             serverSocketChannel.socket().bind(new InetSocketAddress(port));
-            SelectLoop selectLoop = new SelectLoop(selector);
+            SelectLoop selectLoop = new SelectLoop(selector, serverSocketChannel);
             new Thread(selectLoop,"SelectLoop").start();
             while(serverAlive){
             	Thread.yield();

@@ -20,10 +20,13 @@ public class SelectLoop implements  Runnable{
 
     private Selector selector;
 
+    private ServerSocketChannel serverSocketChannel;
+
     private BlockingQueue<SocketChannel> channelQueue;
 
-    public SelectLoop(Selector selector) {
+    public SelectLoop(Selector selector, ServerSocketChannel serverSocketChannel) {
         this.selector = selector;
+        this.serverSocketChannel = serverSocketChannel;
         channelQueue = new LinkedBlockingDeque<>();
     }
 
@@ -38,16 +41,17 @@ public class SelectLoop implements  Runnable{
                 Iterator<SelectionKey> iterable = set.iterator();
                 while (iterable.hasNext()){
                     SelectionKey key = iterable.next();
+                    channel = (SocketChannel) key.channel();
                     if (key.isAcceptable()) {
-                        ServerSocketChannel serverSocketChannel = (ServerSocketChannel)key.channel();
-                        channel = serverSocketChannel.accept();
-                        channel.configureBlocking(false);
-                        channel.register(selector, SelectionKey.OP_READ);
+                         new Thread(new Acceptor()).start();
                     }
                     if (key.isReadable()) {
-                        channel = (SocketChannel) key.channel();
-						readFromChannel(channel);
-//						new Thread(new ChannelHandler(channel)).start();
+                        new Thread(new Reader(channel)).start();
+                    }
+                    if (key.isWritable()) {
+                        //TODO 还有一点不太不明确，是否应该将writable从interest set里面去掉？感觉如果删掉会出问题。
+                        ByteBuffer byteBuffer = (ByteBuffer) key.attachment();
+                        new Thread(new Writer(channel, byteBuffer)).start();
                     }
                     iterable.remove();
                 }
@@ -64,29 +68,68 @@ public class SelectLoop implements  Runnable{
         return channelQueue.offer(channel);
     }
 
-
-    public void readFromChannel(SocketChannel socketChannel) {
-        ByteBuffer buffer = ByteBuffer.allocate(128);
-        try {
-            int res;
-            StringBuilder sb = new StringBuilder();
-            buffer.clear();
-            System.out.println("---------start get message");
-            while ( (res = socketChannel.read(buffer)) > 0 ) {
-                System.out.println("---------get message length " + res);
-                buffer.flip();
-                while (buffer.position() < buffer.limit()) {//todo < or <= ???
-                    sb.append((char)buffer.get());
-                }
-                System.out.println(sb.toString());
-                buffer.clear();
+    class Acceptor implements Runnable{
+        @Override
+        public void run() {
+            try {
+                SocketChannel channel = serverSocketChannel.accept();
+                channel.configureBlocking(false);
+                addChannel(channel);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            if (res == -1) {
-                socketChannel.close();
-            }
-            System.out.println("---------get message over");
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
+
+    class Reader implements Runnable{
+        SocketChannel socketChannel;
+        Reader(SocketChannel channel){
+            this.socketChannel = channel;
+        }
+        @Override
+        public void run() {
+            ByteBuffer buffer = ByteBuffer.allocate(128);
+            try {
+                int res;
+                StringBuilder sb = new StringBuilder();
+                buffer.clear();
+                System.out.println("---------start get message");
+                while ( (res = socketChannel.read(buffer)) > 0 ) {
+                    System.out.println("---------get message length " + res);
+                    buffer.flip();
+                    while (buffer.position() < buffer.limit()) {//todo < or <= ???
+                        sb.append((char)buffer.get());
+                    }
+                    System.out.println(sb.toString());
+                    buffer.clear();
+                }
+                if (res == -1) {
+                    socketChannel.close();
+                }
+                System.out.println("---------get message over");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    class Writer implements Runnable{
+        SocketChannel socketChannel;
+        ByteBuffer byteBuffer;
+
+        Writer(SocketChannel channel, ByteBuffer byteBuffer) {
+            this.socketChannel = channel;
+            this.byteBuffer = byteBuffer;
+        }
+
+        @Override
+        public void run() {
+            try {
+                socketChannel.write(byteBuffer);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
