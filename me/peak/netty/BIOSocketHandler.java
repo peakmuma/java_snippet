@@ -8,13 +8,13 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-public class SocketHandler implements Runnable {
+public class BIOSocketHandler implements Runnable {
 
-	static Logger logger = LoggerFactory.getLogger(SocketHandler.class);
+	static Logger logger = LoggerFactory.getLogger(BIOSocketHandler.class);
 
     Socket socket;
 
-    public SocketHandler(Socket socket) {
+    public BIOSocketHandler(Socket socket) {
         this.socket = socket;
     }
 

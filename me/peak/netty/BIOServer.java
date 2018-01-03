@@ -24,17 +24,17 @@ public class BIOServer {
             logger.info("listening port {}", port);
             while (serverAlive) {
                 Socket socket = serverSocket.accept();
-                new Thread(new SocketHandler(socket)).start();
+                new Thread(new BIOSocketHandler(socket)).start();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+        	logger.error("something error", e);
         } finally {
             if (serverSocket != null) {
                 try {
                     serverSocket.close();
                     logger.info("stop listen port {}", port);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                	logger.error("something error", e);
                 }
             }
         }

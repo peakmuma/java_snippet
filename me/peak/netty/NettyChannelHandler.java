@@ -9,7 +9,7 @@ import java.nio.charset.Charset;
 
 
 @ChannelHandler.Sharable
-public class ReceiveMessageHandler extends ChannelInboundHandlerAdapter{
+public class NettyChannelHandler extends ChannelInboundHandlerAdapter{
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {

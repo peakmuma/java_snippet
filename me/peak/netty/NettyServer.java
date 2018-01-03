@@ -34,7 +34,7 @@ public class NettyServer {
             bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {//有连接到达时会创建一个channel
                 protected void initChannel(SocketChannel ch) throws Exception {
                     // pipeline管理channel中的Handler，在channel队列中添加一个handler来处理业务
-                    ch.pipeline().addLast("myHandler", new ReceiveMessageHandler());
+                    ch.pipeline().addLast("myHandler", new NettyChannelHandler());
                 }
             });
 
