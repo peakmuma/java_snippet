@@ -1,4 +1,4 @@
-package me.peak.game.jump;
+package me.peak.game;
 
 import javax.swing.*;
 import java.awt.*;
