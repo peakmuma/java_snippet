@@ -26,7 +26,7 @@ public class MouseClick extends JFrame{
         frame.setLayout(new FlowLayout(FlowLayout.CENTER));//框架流布局且居中对齐
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//设置点击关闭按钮时的默认操作
         getPhoneScreen(fileName);
-        JLabel label = new JLabel();
+        final JLabel label = new JLabel();
         setImage(label, fileName);
         frame.add(label); // 将标签放入窗体
         frame.setVisible(true);
