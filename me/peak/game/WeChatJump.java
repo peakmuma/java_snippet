@@ -1,4 +1,4 @@
-package me.peak.game.jump;
+package me.peak.game;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,7 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 
-public class MouseClick extends JFrame{
+public class WeChatJump extends JFrame{
     private JLabel label;
     int clickTime = 0;
     int x;
@@ -16,10 +16,10 @@ public class MouseClick extends JFrame{
     static String fileName = filaPath + "0.png";
 
     public static void main(String[] args) {
-        new MouseClick();
+        new WeChatJump();
     }
 
-    public MouseClick(){
+    public WeChatJump(){
         JFrame frame = new JFrame("test");
         frame.setSize(540,1000);//设置窗体的宽和高
         frame.setVisible(true);//设置窗体可见
