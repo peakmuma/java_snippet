@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
@@ -24,6 +25,10 @@ public class BIOSocketHandler implements Runnable {
         try {
             socket.setSoTimeout(5000);
             InputStream in = socket.getInputStream();
+            in.read(bytes);
+
+            OutputStream out = socket.getOutputStream();
+            out.write(bytes);
             StringBuilder sb = new StringBuilder();
             int res;
             while ( (res = in.read(bytes)) != -1) {

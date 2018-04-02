@@ -16,7 +16,7 @@ public class NIOSocketHandler implements Runnable{
 		this.socketChannel = channel;
 	}
 	@Override
-	public synchronized void run() {
+	public void run() {
 		ByteBuffer buffer = ByteBuffer.allocate(128);
 		try {
 			int res;
@@ -24,13 +24,13 @@ public class NIOSocketHandler implements Runnable{
 			buffer.clear();
 			logger.info("---------start get message");
 			while ( (res = socketChannel.read(buffer)) > 0 ) {
-				logger.info("---------get message length " + res);
+				logger.info("---------get message length {}", res);
 				buffer.flip();
-				while (buffer.position() < buffer.limit()) {//todo < or <= ???
+				while (buffer.position() < buffer.limit()) {
 					sb.append((char)buffer.get());
 				}
-				processMessage(sb.toString());
 				buffer.clear();
+				processMessage(sb.toString());
 			}
 			if (res == -1) {
 				socketChannel.close();
@@ -41,7 +41,12 @@ public class NIOSocketHandler implements Runnable{
 		}
 	}
 
-	public void processMessage(String message){
-		System.out.println(message);
+	public void processMessage(final String message){
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				System.out.println(message);
+			}
+		}).start();
 	}
 }

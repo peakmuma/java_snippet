@@ -14,7 +14,9 @@ public class NettyChannelHandler extends ChannelInboundHandlerAdapter{
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = (ByteBuf)msg;
-        System.out.println("receive msg is :" + buf.toString(Charset.forName("utf-8")));
+        msg = buf.toString(Charset.forName("utf-8"));
+        System.out.println("receive msg is :" + msg);
+        ctx.fireChannelRead(msg);
     }
 
     @Override

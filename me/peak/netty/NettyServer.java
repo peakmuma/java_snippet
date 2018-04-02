@@ -3,6 +3,7 @@ package me.peak.netty;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -18,11 +19,6 @@ public class NettyServer {
             e.printStackTrace();
         }
     }
-    //io是啥, nio又是啥
-    //nio比bio好在什么地方, netty又比nio好在什么地方. 用bio,nio,netty分别提供服务, 发送大量请求, 看哪个先处理完.
-    //如何使用netty进行开发, pom引入jar包, 自己写handler, 如何拼接handler, 现有的大项目是如何使用netty的.
-    //netty的运行模型, 如何处理连接, 接收到消息如何处理. 这个是讲解的核心, 有哪些思想可以借鉴.
-    //netty的启动过程
     public void start() throws InterruptedException {
         int port = 9060;
         NioEventLoopGroup group = new NioEventLoopGroup();
@@ -35,6 +31,7 @@ public class NettyServer {
                 protected void initChannel(SocketChannel ch) throws Exception {
                     // pipeline管理channel中的Handler，在channel队列中添加一个handler来处理业务
                     ch.pipeline().addLast("myHandler", new NettyChannelHandler());
+                    ch.pipeline().addLast("myHandler2", new NettySecondHandler());
                 }
             });
 
