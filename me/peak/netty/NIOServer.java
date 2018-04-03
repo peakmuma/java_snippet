@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 
 public class NIOServer {
 
@@ -17,20 +18,20 @@ public class NIOServer {
 
     public void start(int port){
         ServerSocketChannel serverSocketChannel = null;
+        Selector selector = null;
         try {
             serverSocketChannel = ServerSocketChannel.open();
-            serverSocketChannel.configureBlocking(false);
-
-            Selector selector = Selector.open();
-            SelectionKey key = serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
             serverSocketChannel.socket().bind(new InetSocketAddress(port));
 
+            selector = Selector.open();
             NIOSelectLoop selectLoop = new NIOSelectLoop(selector);
-            key.attach(new NIOAcceptor(serverSocketChannel, selectLoop));
-
             new Thread(selectLoop,"SelectLoop").start();
+
             while(serverAlive){
-            	Thread.yield();
+                SocketChannel socketChannel = serverSocketChannel.accept();
+                socketChannel.configureBlocking(false);
+                selectLoop.addChannel(socketChannel);
+                selector.wakeup();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -39,6 +40,13 @@ public class NIOServer {
             if (serverSocketChannel != null) {
                 try {
                     serverSocketChannel.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (selector != null) {
+                try {
+                    selector.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

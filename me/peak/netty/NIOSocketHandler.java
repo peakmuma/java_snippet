@@ -22,14 +22,14 @@ public class NIOSocketHandler implements Runnable{
 	}
 
 	@Override
-	public synchronized void run() {
+	public void run() {
 		ByteBuffer buffer = ByteBuffer.allocate(128);
 		try {
 			int res;
 			buffer.clear();
 			logger.info("---------start get message");
 			while ( (res = socketChannel.read(buffer)) > 0 ) {
-				logger.info("---------get message length " + res);
+				logger.info("---------get message length {}", res);
 				buffer.flip();
 				while (buffer.position() < buffer.limit()) {//todo < or <= ???
 					char c = (char)buffer.get();

@@ -34,6 +34,14 @@ public class HttpClientUtil {
 		return instance;
 	}
 
+	public static void main(String[] args) {
+//		String url = "https://127.0.0.1:8443/sv/rest/tts/callbill";
+		String url = "http://127.0.0.1:8080/sv/rest/tts/callbill";
+		String params = "{\"reqId\":789, \"endTime\":\"2018-03-14 19:38:05\", \"callDuration\":4}";
+		String res = getInstance().sendHttpPost(url, params);
+		System.out.println(res);
+	}
+
 	/**
 	 * 发送 post请求
 	 * @param httpUrl 地址
@@ -53,7 +61,8 @@ public class HttpClientUtil {
 		try {
 			//设置参数
 			StringEntity stringEntity = new StringEntity(params, "UTF-8");
-			stringEntity.setContentType("application/x-www-form-urlencoded");
+//			stringEntity.setContentType("application/x-www-form-urlencoded");
+			stringEntity.setContentType("application/json");
 			httpPost.setEntity(stringEntity);
 		} catch (Exception e) {
 			e.printStackTrace();
