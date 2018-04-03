@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
@@ -51,7 +52,14 @@ public class NIOSocketHandler implements Runnable{
 		}
 	}
 
-	public void processMessage(String message){
+	public void processMessage(String message) throws IOException {
+		//process message
 	    logger.info(message);
+	    //send message
+	    byte[] bytes = message.getBytes("UTF-8");
+	    ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length);
+	    byteBuffer.put(bytes);
+	    byteBuffer.flip();
+	    socketChannel.write(byteBuffer);
 	}
 }
