@@ -29,17 +29,17 @@ public class NettyServer {
     public void start() throws InterruptedException {
         int port = 9060;
         NioEventLoopGroup group = new NioEventLoopGroup();
+        NioEventLoopGroup pa = new NioEventLoopGroup(3);
         EventExecutorGroup executors = new DefaultEventExecutorGroup(16);
         ServerBootstrap bootstrap = new ServerBootstrap();
         try {
-            bootstrap.group(group);
+            bootstrap.group(pa, group);
             bootstrap.channel(NioServerSocketChannel.class);// 设置nio类型的channel
             bootstrap.localAddress(new InetSocketAddress(port)); //设置监听地址
             bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {//有连接到达时会创建一个channel
                 protected void initChannel(SocketChannel ch) throws Exception {
                     // pipeline管理channel中的Handler，在channel队列中添加一个handler来处理业务
-//                    ch.pipeline().addLast(executors, "encode", new ObjectEncoder());
-                    ch.pipeline().addLast(executors,"decode", new FixedLengthFrameDecoder(3));
+//                    ch.pipeline().addLast(executors,"decode", new FixedLengthFrameDecoder(3));
                     ch.pipeline().addLast(executors,"inHandlerA", new NettyChannelInHandlerA());
                     ch.pipeline().addLast(executors, "inHandlerB", new NettyChannelInHandlerB());
                 }

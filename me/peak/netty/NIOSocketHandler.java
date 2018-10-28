@@ -8,6 +8,8 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+import static me.peak.netty.Client.EOF;
+
 public class NIOSocketHandler implements Runnable{
 
 	Logger logger = LoggerFactory.getLogger(NIOSocketHandler.class);
@@ -23,7 +25,7 @@ public class NIOSocketHandler implements Runnable{
 
 	@Override
 	public void run() {
-		ByteBuffer buffer = ByteBuffer.allocate(128);
+		ByteBuffer buffer = ByteBuffer.allocate(1024);
 		try {
 			int res;
 			buffer.clear();
@@ -33,7 +35,7 @@ public class NIOSocketHandler implements Runnable{
 				buffer.flip();
 				while (buffer.position() < buffer.limit()) {//todo < or <= ???
 					char c = (char)buffer.get();
-					if (c != (byte)4) {
+					if (c != EOF) {
 						messageSB.append(c);
 					} else {
 						processMessage(messageSB.toString());

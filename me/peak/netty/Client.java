@@ -12,12 +12,15 @@ public class Client implements Runnable {
 
     static Logger log = LoggerFactory.getLogger(Client.class);
 
+    static byte EOF = (byte)4;
+
     //疑问点:socket的close是否会引起inputStream和outStream的断开
     //out.close(), 会发起一个断开连接的请求.
     public static void main(String[] args) {
-//    	for (int j=0; j<16; j++ ) {
-    		new Thread(new Client(), ""+0).start();
-//		}
+		new Thread(new Client(), ""+0).start();
+    	for (int j=1; j<16; j++ ) {
+    		new Thread(new Client(), ""+j).start();
+		}
     }
 
 	@Override
@@ -26,7 +29,6 @@ public class Client implements Runnable {
 		try {
 			socket = new Socket("127.0.0.1", 9060); //建立TCP连接的过程。
 			socket.setSoTimeout(15000);
-
 			for (int i = 0; i < 2; i++) {
 				sendMessage(socket, "Thread" + Thread.currentThread().getName() + ": the No." + i + " message");
 				Thread.sleep(2000);
@@ -38,7 +40,7 @@ public class Client implements Runnable {
 			log.info("start read");
 			while ((res = in.read(bytes)) != -1) {
 				for (int i = 0; i < res; i++) {
-					if (bytes[i] != (byte) 4) {
+					if (bytes[i] != EOF) {
 						sb.append((char) bytes[i]);
 					} else {
 						log.info("client receive message: {}", sb.toString());
@@ -69,7 +71,7 @@ public class Client implements Runnable {
 	public static void sendMessage(Socket socket, String message) throws IOException {
 		OutputStream out = socket.getOutputStream();
 		out.write(message.getBytes(Charset.forName("ASCII"))); //发送数据
-		out.write((byte)4);
+		out.write(EOF);
 		out.flush();
 		log.info("client send message: {}", message);
 	}
