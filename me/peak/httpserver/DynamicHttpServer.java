@@ -1,7 +1,6 @@
 package me.peak.httpserver;
 
 import me.peak.httpserver.sockethandler.SwitchSocketHandler;
-import me.peak.netty.NIOSelectLoop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +37,7 @@ public class DynamicHttpServer {
 			serverSocketChannel.socket().bind(new InetSocketAddress(this.port));
 			logger.debug("listen port " + this.port);
 			Selector selector = Selector.open();
-			new Thread(new NIOSelectLoop(selector)).start();
+//			new Thread(new NIOSelectLoop(selector)).start();
 			while(true){
 				SocketChannel socketChannel = serverSocketChannel.accept();
 				SelectionKey selectionKey = socketChannel.register(selector, SelectionKey.OP_READ);

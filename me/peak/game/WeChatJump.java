@@ -6,6 +6,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 
+//跳一跳游戏辅助, 需要使用adb连接手机后使用
+
 public class WeChatJump extends JFrame{
     private JLabel label;
     int clickTime = 0;

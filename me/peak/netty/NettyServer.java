@@ -29,11 +29,10 @@ public class NettyServer {
     public void start() throws InterruptedException {
         int port = 9060;
         NioEventLoopGroup group = new NioEventLoopGroup();
-        NioEventLoopGroup pa = new NioEventLoopGroup(3);
-        EventExecutorGroup executors = new DefaultEventExecutorGroup(16);
-        ServerBootstrap bootstrap = new ServerBootstrap();
+        final EventExecutorGroup executors = new DefaultEventExecutorGroup(16);
+        final ServerBootstrap bootstrap = new ServerBootstrap();
         try {
-            bootstrap.group(pa, group);
+            bootstrap.group(group);
             bootstrap.channel(NioServerSocketChannel.class);// 设置nio类型的channel
             bootstrap.localAddress(new InetSocketAddress(port)); //设置监听地址
             bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {//有连接到达时会创建一个channel

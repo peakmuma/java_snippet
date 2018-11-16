@@ -1,12 +1,6 @@
 package me.peak;
 
-import me.peak.util.HttpClientUtil;
-import org.apache.http.client.utils.HttpClientUtils;
-import sun.net.www.http.HttpClient;
 
-import java.math.BigDecimal;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,68 +9,18 @@ import java.util.regex.Pattern;
  * Created by peak on 2016/11/26.
  */
 public class SimpleTestSnippet {
+
     public static void main(String[] args){
 //        classTypeTest();
 //        stringInternTest();
 //        threadStatusTest();
-//		Cache cache = new Cache();
-//		System.out.println(cache.toString());
+		removeElementTest();
 
-		int count = 0;
-		for (int i = 0; i<1000000 ; i++) {
-			int j = getRandom();
-			if (j >=1 && j<=10) {
-				count++;
-			}
-		}
-		System.out.println(count);
 
-//		System.out.println(getClassOpenNewChoiceResult(null));
-//		System.out.println(getClassOpenNewChoiceResult("9"));
-//		System.out.println(getClassOpenNewChoiceResult("1"));
-//		System.out.println(getClassOpenNewChoiceResult("12221"));
 
-//		for (int i = 1; i<100; i++){
-//			System.out.println("ALTER TABLE ent_paper_user_question_" + String.format("%02d",i)  + " MODIFY score DECIMAL(4,1) DEFAULT '0' COMMENT '学员得分';");
-////			System.out.println("CREATE TABLE ent_paper_user_question_" + String.format("%02d",i) +" LIKE ent_paper_user_question_00;");
-//		}
-//		System.out.println(new SimpleDateFormat("yyyy年MM月dd日").format(new Date()));
-
-//		List<String> strList1 = new ArrayList<>();
-//		strList1.add("1");
-//		strList1.add("2");
-//		strList1.add("3");
-//		strList1.add("4");
-//		strList1.add("5");
-//		strList1.add("6");
-//
-//		for (int i=0; i<strList1.size(); i++) {
-//			if (strList1.get(i).equals("3")) {
-//				strList1.remove("3");
-//				i--;
-//			} else {
-//				System.out.println(strList1.get(i));
-//			}
-//		}
-
-//		Iterator<String> iterator = strList1.iterator();
-//		while (iterator.hasNext()) {
-//			String str = iterator.next();
-//			if (str.equals("3")) {
-//				strList1.remove(str);
-//			} else {
-//				System.out.println(str);
-//			}
-//		}
-//		for (String str : strList1) {
-//			if (str.equals("3")) {
-//				strList1.remove(str);
-//			} else {
-//				System.out.println(str);
-//			}
-//
-//		}
 	}
+
+
 
 	public static int getRandom (){
 		Random r = new Random();
@@ -93,44 +37,6 @@ public class SimpleTestSnippet {
 		Matcher m = p.matcher(mobile);
 		return m.matches();
 	}
-
-
-	private static String getNoticeNewChoiceResult(String choiceResult) {
-		if (choiceResult == null) {
-			return "0";
-		}
-		//初始值0
-		StringBuilder newChoiceResult = new StringBuilder("0");
-		for (int i = 0; i < choiceResult.length(); i++) {
-			char c = choiceResult.charAt(i);
-			if (c == '1' || c == '2') {
-				//1或2为合法值, 设置到相应的位置
-				newChoiceResult.setCharAt(0, c);
-			}
-		}
-		return newChoiceResult.toString();
-	}
-
-
-	private static String getClassOpenNewChoiceResult(String choiceResult) {
-		if (choiceResult == null) {
-			return "00";
-		}
-		//初始值00
-		StringBuilder newChoiceResult = new StringBuilder("00");
-		for (int i = 0; i < choiceResult.length(); i++) {
-			char c = choiceResult.charAt(i);
-			if (c == '1' || c == '2') {
-				//1或2为合法值, 设置到相应的位置
-				newChoiceResult.setCharAt(i % 2, c);
-			}
-		}
-		return newChoiceResult.toString();
-	}
-
-
-
-
 
     public static void classTypeTest(){
         Object o = new String();
@@ -152,7 +58,7 @@ public class SimpleTestSnippet {
      thread run method over
      start over, thread state is: TERMINATED
      */
-    public static void threadStatusTest(){
+    public static void threadStatusTest() {
         try {
 			Thread t = new Thread(new Runnable() {
 				@Override
@@ -169,6 +75,46 @@ public class SimpleTestSnippet {
             e.printStackTrace();
         }
     }
+
+    public static void removeElementTest() {
+    	List<String> strList = new ArrayList<String>();
+    	strList.add("1");
+		strList.add("2");
+		strList.add("3");
+		strList.add("4");
+		strList.add("5");
+
+		//下标遍历, 不报错, 但是会少遍历一个
+//		for (int i=0; i<strList.size(); i++) {
+//			if (strList.get(i).equals("3")) {
+//				strList.remove("3");
+//			} else {
+//				System.out.println(strList.get(i));
+//			}
+//		}
+
+		//迭代器遍历, 有两种删除方式
+//		Iterator<String> iterator = strList.iterator();
+//		while (iterator.hasNext()) {
+//			String str = iterator.next();
+//			if (str.equals("3")) {
+////				strList.remove(str);  //报错 ConcurrentModificationException
+//				iterator.remove();  //正确写法, 不报错也不会少遍历元素
+//			} else {
+//				System.out.println(str);
+//			}
+//		}
+
+		//这种实际上也是迭代器遍历, 抛异常 ConcurrentModificationException
+		for (String str : strList) {
+			if (str.equals("3")) {
+				strList.remove(str);
+			} else {
+				System.out.println(str);
+			}
+		}
+	}
+
 }
 
 
