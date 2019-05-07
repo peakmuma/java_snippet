@@ -1,6 +1,10 @@
 package me.peak;
 
 
+import com.alibaba.fastjson.JSONObject;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,13 +18,55 @@ public class SimpleTestSnippet {
 //        classTypeTest();
 //        stringInternTest();
 //        threadStatusTest();
-		removeElementTest();
-
+//		removeElementTest();
+//		debugTest();
+//		floatRoundTest();
 
 
 	}
 
+	//test the breakpoint whether suspend other thread
+	public static void debugTest() {
 
+		Runnable a = new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.out.println("this is a runnable");
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.out.println("this is a runnable");
+			}
+		};
+
+		Runnable b = new Runnable() {
+			public void run() {
+				//debug here, look the a thread print
+				System.out.println("this is b runnable");
+			}
+		};
+
+		new Thread(a).start();
+		new Thread(b).start();
+	}
+
+
+	public static void floatRoundTest() {
+		List<Float> nums = new ArrayList<>();
+		nums.add(2050.4999f);
+		nums.add(4480.59f);
+		nums.add(4480.4f);
+		nums.add(4480.5f);
+		for (Float num : nums) {
+			System.out.println(Math.round(num));
+		}
+	}
 
 	public static int getRandom (){
 		Random r = new Random();

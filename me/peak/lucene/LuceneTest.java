@@ -27,8 +27,8 @@ public class LuceneTest {
 	public static void main(String[] args) {
 		String indexPath = "E:\\lucence_dir\\index";
 		String docsPath = "E:\\linux-inside\\linux-insides";
-//		index(indexPath, docsPath);
-		search(indexPath, "contents", "memory");
+		index(indexPath, docsPath);
+//		search(indexPath, "contents", "memory");
 	}
 
 	static void search(String indexPath, String field, String queryStr) {
@@ -70,8 +70,9 @@ public class LuceneTest {
 			Analyzer analyzer = new StandardAnalyzer();
 			IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
 			iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-
+			iwc.setUseCompoundFile(false);
 			IndexWriter writer = new IndexWriter(dir, iwc);
+
 			indexDocs(writer, docDir);
 
 			writer.close();
