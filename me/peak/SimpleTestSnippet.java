@@ -3,6 +3,8 @@ package me.peak;
 
 import com.alibaba.fastjson.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
@@ -22,8 +24,96 @@ public class SimpleTestSnippet {
 //		debugTest();
 //		floatRoundTest();
 
+		testSwitch(1);
+		System.out.println("-------1 result end----------------");
+		testSwitch(2);
+		System.out.println("--------2 result end----------------");
+		testSwitch(3);
+		System.out.println("--------3 result end----------------");
+		testSwitch(4);
+		System.out.println("---------4 result end----------------");
+		testSwitch(5);
+		System.out.println("---------5 result end----------------");
+		testSwitch(6);
+		System.out.println("---------6 result end----------------");
 
+//		addDouble();
+
+//		testChangeSubArray();
 	}
+
+	public static void testStringGetBytes() {
+		try {
+			String a = new String("测试一下有啥区别".getBytes("GBK"), "GBK")	;
+			String b = new String("测试一下有啥区别".getBytes("GBK"), "ISO8859-1")	;
+			System.out.println(a.getBytes().length);
+			System.out.println(b.getBytes().length);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void testRandom() {
+		Random random = new Random();
+		int[] arr = new int[5];
+		for (int i = 0 ; i < 100; i++) {
+			int r = random.nextInt(5);
+			System.out.println(r);
+			arr[r]++;
+		}
+		for (int i = 0; i < arr.length; i++) {
+			System.out.println(arr[i]);
+		}
+	}
+
+	public static void testChangeSubArray() {
+    	//改变父, 子会变化, 改变子, 父也会变化
+		List<String> parent = new ArrayList<>();
+		parent.add("a");
+		parent.add("a");
+		parent.add("a");
+		parent.add("a");
+		parent.add("a");
+
+		List<String> child = parent.subList(1,3);
+//		child.set(0, "c");
+		parent.set(2, "c");
+		for (String a : parent) {
+			System.out.println(a);
+		}
+		System.out.println("-------------");
+		for (String a : child) {
+			System.out.println(a);
+		}
+	}
+
+	public static void addDouble() {
+    	//精度问题
+		Double a = 1.19;
+		Double b = 0.99;
+		System.out.println(Double.sum(a, b));
+	}
+
+	public static void testSwitch(int i) {
+    	//case的行为是, 从匹配上的那一个开始, 会一直执行下去(不管是否能匹配上) 直到break或者函数结尾.
+		//default 会匹配上所有情况
+		switch (i) {
+			case 1:
+				System.out.println(1);
+				break;
+			case 2:
+				System.out.println(2);
+			case 3:
+				System.out.println(3);
+				break;
+			case 5:
+				System.out.println(5);
+			default:
+				System.out.println("default");
+		}
+	}
+
+
 
 	//test the breakpoint whether suspend other thread
 	public static void debugTest() {
@@ -68,7 +158,7 @@ public class SimpleTestSnippet {
 		}
 	}
 
-	public static int getRandom (){
+	public static int getRandom(){
 		Random r = new Random();
 		int random = r.nextInt(10) + 1;
 		return random;
