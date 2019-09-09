@@ -7,6 +7,11 @@
     <packaging>jar</packaging>
     <version>0.1.0</version>
 
+    <properties>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -114,38 +119,7 @@
             <version>7.5.0</version>
         </dependency>
 
-
-
-
-
-
-
-
-
-
     </dependencies>
-
-    <build>
-        <plugins> 
-            <plugin> 
-                <!-- mvn dependency:resolve  this command used to download jar-->
-                <!-- mvn dependency:copy-dependencies   this command used to copy jar-->
-                <groupId>org.apache.maven.plugins</groupId>  
-                <artifactId>maven-dependency-plugin</artifactId>  
-
-                <configuration> 
-                    <artifactItems>  
-                        <artifactItem>  
-                            <groupId>org.apache.httpcomponents</groupId>
-                            <artifactId>httpclient</artifactId>
-                            <version>4.5.2</version>
-                        </artifactItem>  
-                    </artifactItems>  
-                    <outputDirectory>lib</outputDirectory> 
-                    <excludeTransitive>false</excludeTransitive> 
-                    <stripVersion>false</stripVersion> 
-                </configuration> 
-            </plugin> 
-        </plugins>
-    </build>
+    <!-- mvn dependency:resolve  this command used to download jar-->
+    <!-- mvn dependency:tree  this command used to print the dependency tree -->
 </project>
