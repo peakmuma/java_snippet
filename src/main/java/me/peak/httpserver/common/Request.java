@@ -1,6 +1,5 @@
 package me.peak.httpserver.common;
 
-import java.io.BufferedReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;

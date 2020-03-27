@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
 
 /**
  * Created by peak on 2016/12/28.

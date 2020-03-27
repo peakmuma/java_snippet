@@ -24,22 +24,54 @@ public class SimpleTestSnippet {
 //		debugTest();
 //		floatRoundTest();
 
-		testSwitch(1);
-		System.out.println("-------1 result end----------------");
-		testSwitch(2);
-		System.out.println("--------2 result end----------------");
-		testSwitch(3);
-		System.out.println("--------3 result end----------------");
-		testSwitch(4);
-		System.out.println("---------4 result end----------------");
-		testSwitch(5);
-		System.out.println("---------5 result end----------------");
-		testSwitch(6);
-		System.out.println("---------6 result end----------------");
+//		testSwitch(1);
+//		System.out.println("-------1 result end----------------");
+//		testSwitch(2);
+//		System.out.println("--------2 result end----------------");
+//		testSwitch(3);
+//		System.out.println("--------3 result end----------------");
+//		testSwitch(4);
+//		System.out.println("---------4 result end----------------");
+//		testSwitch(5);
+//		System.out.println("---------5 result end----------------");
+//		testSwitch(6);
+//		System.out.println("---------6 result end----------------");
 
 //		addDouble();
 
 //		testChangeSubArray();
+//		System.out.println(divide(1, 2));
+//		System.out.println(divide(0, 2));
+//		System.out.println(divide(1, 0));
+//		System.out.println(divide(5, 3));
+//		System.out.println(divide(5, 4));
+
+//		for (int i = 0; i < 100; i++) {
+//			System.out.println(i + " " + i % 60);
+//		}
+
+//		JSONObject jsonObject = new JSONObject();
+//		JSONObject jsonObject1 = new JSONObject();
+//		jsonObject.putAll(jsonObject1);
+        long sessionId = 0x192222222L;
+		System.out.println(sessionId >>> 32);
+		System.out.println((int)sessionId);
+
+
+	}
+
+
+	private static String divide(Integer num1, Integer num2) {
+		if ( num1 == null || num2 == null || num1 == 0 || num2 == 0 ) {
+			return "0";
+		}
+//		NumberFormat numberFormat = NumberFormat.getInstance();
+//		numberFormat.setMaximumFractionDigits(2);
+//		return numberFormat.format(((double) num1) / num2);
+
+		NumberFormat percentInstance = NumberFormat.getPercentInstance();
+		percentInstance.setMaximumFractionDigits(2); // 保留小数两位
+		return percentInstance.format(((double) num1) / num2);
 	}
 
 	public static void testStringGetBytes() {
