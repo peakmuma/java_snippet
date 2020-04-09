@@ -1,0 +1,9 @@
+server:
+  port: 8085
+
+cas:
+  # cas服务器和登录地址
+  serverUrlPrefix: http://127.0.0.1:8080/cas
+  serverLoginUrl: http://127.0.0.1:8080/cas/login
+  # 当前服务的地址
+  clientHostUrl: http://127.0.0.1:8085
