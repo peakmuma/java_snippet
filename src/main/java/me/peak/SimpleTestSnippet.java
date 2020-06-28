@@ -1,11 +1,13 @@
 package me.peak;
 
 
-import com.alibaba.fastjson.JSONObject;
+import me.peak.util.DBUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -16,6 +18,8 @@ import java.util.regex.Pattern;
  */
 public class SimpleTestSnippet {
 
+	private static Logger logger = LoggerFactory.getLogger(SimpleTestSnippet.class);
+
     public static void main(String[] args){
 //        classTypeTest();
 //        stringInternTest();
@@ -23,6 +27,7 @@ public class SimpleTestSnippet {
 //		removeElementTest();
 //		debugTest();
 //		floatRoundTest();
+//        testRandom();
 
 //		testSwitch(1);
 //		System.out.println("-------1 result end----------------");
@@ -50,14 +55,12 @@ public class SimpleTestSnippet {
 //			System.out.println(i + " " + i % 60);
 //		}
 
-//		JSONObject jsonObject = new JSONObject();
-//		JSONObject jsonObject1 = new JSONObject();
-//		jsonObject.putAll(jsonObject1);
-        long sessionId = 0x192222222L;
-		System.out.println(sessionId >>> 32);
-		System.out.println((int)sessionId);
+	}
 
-
+	private static void testSplit() {
+		String a = "1.2.3";
+		String[] arr = a.split("\\.");
+		System.out.println(arr.length);
 	}
 
 
@@ -85,21 +88,30 @@ public class SimpleTestSnippet {
 		}
 	}
 
+	/**
+	 * random.nextInt(5) 的结果是只会生成0到4的数字, 不会生成5
+	 * 结果如下
+	 * 0 count is : 14
+	 * 1 count is : 13
+	 * 2 count is : 26
+	 * 3 count is : 19
+	 * 4 count is : 28
+	 * 5 count is : 0
+	 */
 	public static void testRandom() {
 		Random random = new Random();
-		int[] arr = new int[5];
+		int[] arr = new int[6];
 		for (int i = 0 ; i < 100; i++) {
-			int r = random.nextInt(5);
-			System.out.println(r);
+			int r = random.nextInt(1);
 			arr[r]++;
 		}
 		for (int i = 0; i < arr.length; i++) {
-			System.out.println(arr[i]);
+			System.out.println(i + " count is : " + arr[i]);
 		}
 	}
 
+	//改变父, 子会变化, 改变子, 父也会变化
 	public static void testChangeSubArray() {
-    	//改变父, 子会变化, 改变子, 父也会变化
 		List<String> parent = new ArrayList<>();
 		parent.add("a");
 		parent.add("a");
@@ -126,9 +138,9 @@ public class SimpleTestSnippet {
 		System.out.println(Double.sum(a, b));
 	}
 
+	//case的行为是, 从匹配上的那一个开始, 会一直执行下去(不管是否能匹配上) 直到break或者函数结尾.
+	//default 会匹配上所有情况
 	public static void testSwitch(int i) {
-    	//case的行为是, 从匹配上的那一个开始, 会一直执行下去(不管是否能匹配上) 直到break或者函数结尾.
-		//default 会匹配上所有情况
 		switch (i) {
 			case 1:
 				System.out.println(1);
