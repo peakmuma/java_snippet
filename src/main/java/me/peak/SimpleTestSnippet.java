@@ -1,7 +1,9 @@
 package me.peak;
 
 
+import com.alibaba.fastjson.JSONObject;
 import me.peak.util.DBUtil;
+import me.peak.util.HttpClientUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +56,18 @@ public class SimpleTestSnippet {
 //		for (int i = 0; i < 100; i++) {
 //			System.out.println(i + " " + i % 60);
 //		}
+
+
+		JSONObject jsonObject = new JSONObject();
+		long mobiePhone = 13589016445L;
+		String url = "http://127.0.0.1:280/user-identify/getUUID";
+		for (int i = 0; i < 50; i++) {
+			mobiePhone ++;
+			jsonObject.put("mobilePhone", mobiePhone);
+			long start = System.currentTimeMillis();
+			HttpClientUtil.getInstance().doPost(url, jsonObject);
+			logger.info("{} cost {}", mobiePhone, System.currentTimeMillis() - start);
+		}
 
 	}
 
