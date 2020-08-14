@@ -23,13 +23,13 @@ public class SimpleTestSnippet {
 	private static Logger logger = LoggerFactory.getLogger(SimpleTestSnippet.class);
 
     public static void main(String[] args){
-//        classTypeTest();
-//        stringInternTest();
-//        threadStatusTest();
+//		classTypeTest();
+//		stringInternTest();
+//		threadStatusTest();
 //		removeElementTest();
 //		debugTest();
 //		floatRoundTest();
-//        testRandom();
+//		testRandom();
 
 //		testSwitch(1);
 //		System.out.println("-------1 result end----------------");
@@ -58,16 +58,16 @@ public class SimpleTestSnippet {
 //		}
 
 
-		JSONObject jsonObject = new JSONObject();
-		long mobiePhone = 13589016445L;
-		String url = "http://127.0.0.1:280/user-identify/getUUID";
-		for (int i = 0; i < 50; i++) {
-			mobiePhone ++;
-			jsonObject.put("mobilePhone", mobiePhone);
-			long start = System.currentTimeMillis();
-			HttpClientUtil.getInstance().doPost(url, jsonObject);
-			logger.info("{} cost {}", mobiePhone, System.currentTimeMillis() - start);
-		}
+//		JSONObject jsonObject = new JSONObject();
+//		long mobiePhone = 13589016445L;
+//		String url = "http://127.0.0.1:280/user-identify/getUUID";
+//		for (int i = 0; i < 50; i++) {
+//			mobiePhone ++;
+//			jsonObject.put("mobilePhone", mobiePhone);
+//			long start = System.currentTimeMillis();
+//			HttpClientUtil.getInstance().doPost(url, jsonObject);
+//			logger.info("{} cost {}", mobiePhone, System.currentTimeMillis() - start);
+//		}
 
 	}
 
