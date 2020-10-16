@@ -4,6 +4,8 @@ package me.peak;
 import com.alibaba.fastjson.JSONObject;
 import me.peak.util.DBUtil;
 import me.peak.util.HttpClientUtil;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.digest.Md5Crypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +24,8 @@ public class SimpleTestSnippet {
 
 	private static Logger logger = LoggerFactory.getLogger(SimpleTestSnippet.class);
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws InterruptedException {
+		System.out.println(DigestUtils.md5Hex("13512341234H!@6VAdtuduiiPAj"));
 //		classTypeTest();
 //		stringInternTest();
 //		threadStatusTest();
@@ -93,8 +96,8 @@ public class SimpleTestSnippet {
 
 	public static void testStringGetBytes() {
 		try {
-			String a = new String("测试一下有啥区别".getBytes("GBK"), "GBK")	;
-			String b = new String("测试一下有啥区别".getBytes("GBK"), "ISO8859-1")	;
+			String a = new String("测试一下有啥区别".getBytes("GBK"), "GBK");
+			String b = new String("测试一下有啥区别".getBytes("GBK"), "ISO8859-1");
 			System.out.println(a.getBytes().length);
 			System.out.println(b.getBytes().length);
 		} catch (UnsupportedEncodingException e) {
