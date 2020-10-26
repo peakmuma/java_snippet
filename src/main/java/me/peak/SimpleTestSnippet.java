@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.NumberFormat;
@@ -24,8 +25,14 @@ public class SimpleTestSnippet {
 
 	private static Logger logger = LoggerFactory.getLogger(SimpleTestSnippet.class);
 
-    public static void main(String[] args) throws InterruptedException {
-		System.out.println(DigestUtils.md5Hex("13512341234H!@6VAdtuduiiPAj"));
+    public static void main(String[] args) throws Exception {
+//		System.out.println(DigestUtils.md5Hex("13512341234H!@6VAdtuduiiPAj"));
+		String url = "https://sfs-public.shangdejigou.cn/sunlands_bf_system/2020-10-22/1603357086970YYf7m7/";
+		int slashIndex = url.lastIndexOf('/');
+		if (slashIndex > 0) {
+			url = url.substring(0, slashIndex + 1) + URLEncoder.encode(url.substring(slashIndex + 1), "utf-8");
+		}
+		System.out.println(url);
 //		classTypeTest();
 //		stringInternTest();
 //		threadStatusTest();

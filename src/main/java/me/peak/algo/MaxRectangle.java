@@ -4,7 +4,7 @@ package me.peak.algo;
  * https://leetcode-cn.com/problems/maximal-rectangle/
   这个思路真的是... 写完还是有点懵, 得好好把思路写下来了....
  */
-public class MaximalRectangle {
+public class MaxRectangle {
     public static void main(String[] args) {
         char[][] matrix = {
                 {'1','0','1','0','1'},
