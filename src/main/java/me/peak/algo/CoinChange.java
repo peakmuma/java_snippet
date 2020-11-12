@@ -2,6 +2,9 @@ package me.peak.algo;
 
 import java.util.Arrays;
 
+/**
+ * https://leetcode-cn.com/problems/coin-change/
+ */
 public class CoinChange {
     public static void main(String[] args) {
         int[] coins = {1,2,10,20,50,100};
