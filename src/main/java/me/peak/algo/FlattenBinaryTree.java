@@ -9,4 +9,22 @@ public class FlattenBinaryTree {
 
 
     }
+
+    static TreeNode flatTree(TreeNode node) {
+        if (node == null) {
+            return null;
+        }
+        if (node.left == null && node.right == null) {
+            return node;
+        }
+        TreeNode rightTail = flatTree(node.right);
+        TreeNode leftTail = flatTree(node.left);
+        if (leftTail != null) {
+            leftTail.right = node.right;
+            node.right = node.left;
+        }
+        node.left = null;
+        return rightTail != null ? rightTail : leftTail;
+    }
+
 }
