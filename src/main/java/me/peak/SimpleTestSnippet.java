@@ -13,8 +13,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,13 +32,24 @@ public class SimpleTestSnippet {
 	private static Logger logger = LoggerFactory.getLogger(SimpleTestSnippet.class);
 
     public static void main(String[] args) throws Exception {
+
+
+//		for (int i = -1; i < 4; i++) {
+//			System.out.println(addZero(Integer.toBinaryString(i << 29)));
+//		}
+//		System.out.println(addZero(Integer.toBinaryString((1 << 29) - 1)));
+
+//		ConcurrentHashMap<Integer, Integer> map = new ConcurrentHashMap();
+//		for (int i = 0; i < 100; i++) {
+//			map.put(i, i);
+//		}
+
 //		System.out.println(DigestUtils.md5Hex("13512341234H!@6VAdtuduiiPAj"));
-		String url = "https://sfs-public.shangdejigou.cn/sunlands_bf_system/2020-10-22/1603357086970YYf7m7/";
-		int slashIndex = url.lastIndexOf('/');
-		if (slashIndex > 0) {
-			url = url.substring(0, slashIndex + 1) + URLEncoder.encode(url.substring(slashIndex + 1), "utf-8");
-		}
-		System.out.println(url);
+
+//		System.out.println(isDateValid("2021/02/31"));
+//		System.out.println(isDateValid("2021/4/30"));
+//		System.out.println(isDateValid("2021/04/30"));
+
 //		classTypeTest();
 //		stringInternTest();
 //		threadStatusTest();
@@ -79,6 +96,18 @@ public class SimpleTestSnippet {
 //			logger.info("{} cost {}", mobiePhone, System.currentTimeMillis() - start);
 //		}
 
+		Executors.newCachedThreadPool();
+
+
+
+	}
+
+	static String addZero(String s) {
+    	int res = s.length();
+		for (int i = 0; i < 32-res; i++) {
+		    s = "0" + s;
+		}
+		return s;
 	}
 
 	private static void testSplit() {

@@ -18,4 +18,10 @@ public class PrintUtil {
         }
         System.out.println();
     }
+
+    public static void printStrList(List<String> strs) {
+        for (String str : strs) {
+            System.out.println(str);
+        }
+    }
 }
