@@ -87,11 +87,11 @@
 
 
         <!-- https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper -->
-        <dependency>
-            <groupId>org.apache.zookeeper</groupId>
-            <artifactId>zookeeper</artifactId>
-            <version>[3.4.14,)</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.zookeeper</groupId>-->
+<!--            <artifactId>zookeeper</artifactId>-->
+<!--            <version>[3.4.14,)</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>javax.mail</groupId>
