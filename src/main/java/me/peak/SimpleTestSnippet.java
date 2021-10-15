@@ -2,6 +2,7 @@ package me.peak;
 
 
 import com.alibaba.fastjson.JSONObject;
+import me.peak.algo.PrintUtil;
 import me.peak.util.DBUtil;
 import me.peak.util.HttpClientUtil;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -18,11 +19,10 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Created by peak on 2016/11/26.
@@ -33,6 +33,9 @@ public class SimpleTestSnippet {
 
     public static void main(String[] args) throws Exception {
 
+		int currentValue = 9, pastValue = 8;
+		String res = String.format("%.2f%%", (float)(currentValue - pastValue) * 100 / pastValue);
+		System.out.println(res);
 
 //		for (int i = -1; i < 4; i++) {
 //			System.out.println(addZero(Integer.toBinaryString(i << 29)));
@@ -96,7 +99,7 @@ public class SimpleTestSnippet {
 //			logger.info("{} cost {}", mobiePhone, System.currentTimeMillis() - start);
 //		}
 
-		Executors.newCachedThreadPool();
+//		Executors.newCachedThreadPool();
 
 
 

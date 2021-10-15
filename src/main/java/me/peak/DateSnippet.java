@@ -2,6 +2,9 @@ package me.peak;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -21,8 +24,28 @@ public class DateSnippet {
 //		Date date = new Date();
 //		System.out.println(getDate(date));
 //		System.out.println(getTime(date));
-		System.out.println(isNowGreatThanTime("19:00"));
+//		System.out.println(isNowGreatThanTime("19:00"));
 
+		System.out.println(getThePastFewDay(19));
+		System.out.println(getFirstDayOfMonth());
+	}
+
+	static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+	public static long diffDays(LocalDateTime ldt, LocalDateTime ldt1) {
+		return ChronoUnit.DAYS.between(ldt, ldt1);
+	}
+
+	//获取几天前的日期
+	public static String getThePastFewDay(int num){
+		LocalDateTime ldt = LocalDateTime.now().minusDays(num);
+		return ldt.format(formatter);
+	}
+
+	//获取本月第一天的日期
+	public static String getFirstDayOfMonth(){
+		LocalDateTime ldt = LocalDateTime.now().withDayOfMonth(1);
+		return ldt.format(formatter);
 	}
 
 	private static int getDate(Date date) {
