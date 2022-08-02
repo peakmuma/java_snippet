@@ -1,6 +1,9 @@
 package me.peak;
 
+import com.alibaba.fastjson.JSONObject;
+
 import java.io.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -8,17 +11,12 @@ import java.util.Set;
 
 public class FileSnippet {
 	public static void main(String[] args) throws IOException {
-//		lookLog("");
 
-		String sourcePath = "/Users/gaolei/IdeaProjects/data-di-apollo/apollo-server/src/main/java/com/mobike/server/bi";
-//		String sourcePath ="/Users/gaolei/IdeaProjects/data-di-apollo/server-authority/src/main/java/com/mobike/server/user";
-//		String targetPath = "/Users/gaolei/IdeaProjects/data-di-apollo/self-service-bi/apollo-core/src/main/java/com/sankuai/bike/apollo";
-		String targetPath = "/Users/gaolei/IdeaProjects/data-di-apollo/self-service-bi/apollo-query/src/main/java/com/mobike/data/bi";
-		compareFile(sourcePath, targetPath);
-
-//		String source = "/Users/gaolei/Documents/basebean";
-//		String target = "/Users/gaolei/Documents/querybean";
-//		compareFileContent(source, target);
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("2021-12-20", new BigDecimal(0));
+		jsonObject.put("2021-12-21", 0.004);
+		jsonObject.put("2021-12-22", new BigDecimal(5));
+		System.out.println(jsonObject.toJSONString());
 
 	}
 
@@ -30,6 +28,38 @@ public class FileSnippet {
 				System.out.println(bean);
 			}
 		}
+	}
+
+	static String parseTable(String sql) {
+		if (sql == null) {
+			return null;
+		}
+		int start = sql.lastIndexOf("from");
+		if (start == -1) {
+			return null;
+		}
+		start += 5;
+		int end = sql.lastIndexOf("where");
+		if (end == -1) {
+			end = sql.length();
+		}
+		end--;
+		return sql.substring(start, end);
+	}
+
+
+	static void buildCSV(List<List> data, List<String> header) throws IOException {
+		File file = new File("/data/test.csv");
+		file.createNewFile();
+		BufferedWriter csvWritter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)) );
+		csvWritter.write(String.join(",", header));
+		csvWritter.newLine();
+		for (List row : data) {
+			csvWritter.write(String.join(",", row));
+			csvWritter.newLine();
+		}
+		csvWritter.flush();
+		csvWritter.close();
 	}
 
 	static void compareFile(String sourcePath, String targetPath) {
