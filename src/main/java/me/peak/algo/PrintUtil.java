@@ -1,5 +1,6 @@
 package me.peak.algo;
 
+import java.util.Collection;
 import java.util.List;
 
 public class PrintUtil {
@@ -11,7 +12,7 @@ public class PrintUtil {
         System.out.println();
     }
 
-    public static void printIntList(List<Integer> nums) {
+    public static void printIntList(Collection<Integer> nums) {
         for (int i : nums) {
             System.out.print(i);
             System.out.print(" ");
@@ -19,7 +20,7 @@ public class PrintUtil {
         System.out.println();
     }
 
-    public static void printStrList(List<String> strs) {
+    public static void printStrList(Collection<String> strs) {
         for (String str : strs) {
             System.out.println(str);
         }

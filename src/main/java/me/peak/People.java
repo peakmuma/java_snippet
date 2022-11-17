@@ -11,4 +11,9 @@ public class People {
     boolean testValue;
 
     boolean testValue1 = true;
+
+    String name;
+
+    int age;
+
 }

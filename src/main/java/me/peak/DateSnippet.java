@@ -1,5 +1,6 @@
 package me.peak;
 
+import me.peak.algo.PrintUtil;
 import org.apache.logging.log4j.util.Strings;
 
 import java.math.BigDecimal;
@@ -18,43 +19,152 @@ public class DateSnippet {
 	static WeekFields weekFields = WeekFields.of(DayOfWeek.MONDAY, 7);
 
 	public static void main(String[] args) throws InterruptedException {
-//		Calendar calendar = Calendar.getInstance();
-//		System.out.println(calendar.get(Calendar.YEAR));
-//		System.out.println(calendar.get(Calendar.MONTH));
-//		System.out.println(calendar.get(Calendar.DAY_OF_MONTH));
-		//calendar 与 date 类型转换
-//		calendar.setTime(new Date());
-//		Thread.sleep(2000);
-//		Calendar nowCalendar = Calendar.getInstance();
-//		System.out.println(nowCalendar.compareTo(calendar));
-//		Date date = calendar.getTime();
-		//calendar
-//		Date date = new Date();
-//		System.out.println(getDate(date));
-//		System.out.println(getTime(date));
-//		System.out.println(isNowGreatThanTime("19:00"));
 
-//		System.out.println(getThePastFewDay(19));
-//		System.out.println(getFirstDayOfMonth());
+		LocalDate start = LocalDate.of(2022, 1, 1);
+		LocalDate end = LocalDate.of(2022, 10, 31);
+//		LocalDate end = LocalDate.now().minusDays(1);
+		Set<String> res = getWeekAndMonth(start, end);
+		res.addAll(getWtdAndMtd());
+		PrintUtil.printStrList(res);
 
-//		System.out.println(getThePastFewDay(1, "yyyyMMdd"));
-		LocalDate date = LocalDate.of(2020, 2, 28);
-		LocalDate sameWeek = getSameWeekLastYear(date);
-		System.out.println(date.get(weekFields.weekOfYear()));
-		System.out.println(date.get(weekFields.dayOfWeek()));
-		System.out.println(sameWeek.get(weekFields.weekOfYear()));
-		System.out.println(sameWeek.get(weekFields.dayOfWeek()));
-		System.out.println(sameWeek.format(DateTimeFormatter.ISO_LOCAL_DATE));
-
-
+//		LocalDate sameWeek = getSameWeekLastYear(date);
+//		System.out.println(date.get(weekFields.weekOfYear()));
+//		System.out.println(date.get(weekFields.dayOfWeek()));
+//		System.out.println(sameWeek.get(weekFields.weekOfYear()));
+//		System.out.println(sameWeek.get(weekFields.dayOfWeek()));
+//		System.out.println(sameWeek.format(DateTimeFormatter.ISO_LOCAL_DATE));
 
 //		LocalDate date = LocalDate.now().minusDays(1);
 //		testCase(date);
-//		testCase(LocalDate.of(2022,7,30));
 //		testCase(date.minusWeeks(1));
 //		testCase(date.minusMonths(1));
+//		testCase(LocalDate.of(2022,7,30));
 //		testCase(LocalDate.of(2021,2,5));
+//		LocalDate end = LocalDate.now().minusDays(1);
+//		LocalDate start = end.minusYears(1).withDayOfMonth(1);
+//		Map<String, List<String>> noneWeekDateRangeMap = buildNoneWeekDateRangeMap(start, end);
+//		Map<String, List<String>> weekDateRangeMap = buildWeekDateRangeMap(start, end);
+	}
 
+	static Map<String, List<String>> buildNoneWeekDateRangeMap(LocalDate start, LocalDate end) {
+		//初始化map
+		Map<String, List<String>> map = new HashMap<>();
+		map.put("day", new ArrayList<>());
+		map.put("month", new ArrayList<>());
+		//调整start 和 end 的值
+		start = start.withDayOfMonth(1);
+		end = end.withDayOfMonth(end.lengthOfMonth());
+		LocalDate yesterday = LocalDate.now().minusDays(1);
+		if (end.isAfter(yesterday)) {
+			end = yesterday;
+		}
+		//生成时间区间
+		while (start.isBefore(end)) {
+			String s = start.format(DateTimeFormatter.ISO_LOCAL_DATE);
+			LocalDate monthEnd = start.withDayOfMonth(start.lengthOfMonth());
+			if (monthEnd.isAfter(end)) {
+				monthEnd = end;
+			}
+			String e = monthEnd.format(DateTimeFormatter.ISO_LOCAL_DATE);
+			map.get("month").add(s +" " + e);
+			map.get("day").add(s +" " + e);
+			start = start.plusMonths(1);
+		}
+		return map;
+	}
+
+	static Map<String, List<String>> buildWeekDateRangeMap(LocalDate start, LocalDate end) {
+		//初始化map
+		Map<String, List<String>> map = new HashMap<>();
+		map.put("w", new ArrayList<>());
+		map.put("ws", new ArrayList<>());
+		map.put("we", new ArrayList<>());
+		DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+		//调整时间区间
+		start = start.with(ChronoField.DAY_OF_WEEK, 1);
+		end = end.with(ChronoField.DAY_OF_WEEK, 7);
+		LocalDate yesterday = LocalDate.now().minusDays(1);
+		if (end.isAfter(yesterday)) {
+			end = yesterday;
+		}
+		//生成时间区间
+		while (start.isBefore(end)) {
+			String s = start.format(formatter);
+			LocalDate weekstartEnd = start.plusDays(4); //周中结束时间
+			LocalDate weekendStart = start.plusDays(5); //周末开始时间
+			LocalDate weekendEnd = start.plusDays(6); //周末结束时间
+			//添加周中
+			if (weekstartEnd.isAfter(end)) {
+				weekstartEnd = end;
+			}
+			String e = weekstartEnd.format(formatter);
+			map.get("ws").add(s + " " + e);
+			//添加整周
+			if (weekendEnd.isAfter(end)) {
+				weekendEnd = end;
+			}
+			e = weekendEnd.format(formatter);
+			map.get("w").add(s + " " + e);
+			//添加周末
+			if (!weekendStart.isAfter(end)) {
+				s = weekendStart.format(formatter);
+				map.get("we").add(s + " " + e);
+			}
+			start = start.plusDays(7);
+		}
+		return map;
+	}
+
+	static Set<String> getWtdAndMtd() {
+		LocalDate end = LocalDate.now().minusDays(1);
+		Set<String> res = new TreeSet<>();
+		LocalDate curWeekStart = end.with(ChronoField.DAY_OF_WEEK, 1);
+		LocalDate curMonthStart = end.withDayOfMonth(1);
+		res.addAll(getDateDuration(curWeekStart, end));
+		res.addAll(getDateDuration(curMonthStart, end));
+
+		LocalDate lastWeek = end.minusWeeks(1);
+		LocalDate lastWeekStart = lastWeek.with(ChronoField.DAY_OF_WEEK, 1);
+		LocalDate lastWeekEnd = lastWeek.with(ChronoField.DAY_OF_WEEK, 7);
+		res.addAll(getDateDuration(lastWeekStart, lastWeekEnd));
+
+		LocalDate lastMonth = end.minusMonths(1);
+		LocalDate lastMonthStart = lastMonth.withDayOfMonth(1);
+		LocalDate lastMonthEnd = lastMonth.withDayOfMonth(lastMonthStart.lengthOfMonth());
+		res.addAll(getDateDuration(lastMonthStart, lastMonthEnd));
+		return res;
+	}
+
+	static Set<String> getDateDuration(LocalDate start, LocalDate end) {
+		Set<String> res = new TreeSet<>();
+		LocalDate curEnd = start;
+		while (end.isAfter(curEnd)) {
+			String s = start.format(DateTimeFormatter.ISO_LOCAL_DATE);
+			String e = curEnd.format(DateTimeFormatter.ISO_LOCAL_DATE);
+			res.add(s + "-" + e);
+			curEnd = curEnd.plusDays(1);
+		}
+		return res;
+	}
+
+	static Set<String> getWeekAndMonth(LocalDate start, LocalDate end) {
+		Set<String> res = new TreeSet<>();
+		while (!start.isAfter(end)) {
+			DayOfWeek dayOfWeek = start.getDayOfWeek();
+			int dayOfMonth = start.getDayOfMonth();
+			if (dayOfWeek == DayOfWeek.MONDAY) {
+				String s = start.format(DateTimeFormatter.ISO_LOCAL_DATE);
+				String e = start.plusDays(6).format(DateTimeFormatter.ISO_LOCAL_DATE);
+				res.add(s + "-" + e);
+			}
+			if (dayOfMonth == 1) {
+				String s = start.format(DateTimeFormatter.ISO_LOCAL_DATE);;
+				String e = start.withDayOfMonth(start.lengthOfMonth()).format(DateTimeFormatter.ISO_LOCAL_DATE);
+				res.add(s + "-" + e);
+			}
+			start = start.plusDays(1);
+		}
+		return res;
 	}
 
 	static LocalDate getSameWeekLastYear(LocalDate localDate) {
