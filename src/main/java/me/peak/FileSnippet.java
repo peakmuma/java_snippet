@@ -12,11 +12,25 @@ import java.util.Set;
 public class FileSnippet {
 	public static void main(String[] args) throws IOException {
 
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("2021-12-20", new BigDecimal(0));
-		jsonObject.put("2021-12-21", 0.004);
-		jsonObject.put("2021-12-22", new BigDecimal(5));
-		System.out.println(jsonObject.toJSONString());
+		List<String> words = readLines("/Users/gaolei/Downloads/词频/200~499 (3176).txt");
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < words.size(); i++) {
+			if (i > 0 && i % 200 == 0) {
+				System.out.println(sb);
+				System.out.println();
+				sb.setLength(0);
+			}
+			if (sb.length() > 0) {
+				sb.append(",");
+			}
+			sb.append(words.get(i));
+		}
+
+//		JSONObject jsonObject = new JSONObject();
+//		jsonObject.put("2021-12-20", new BigDecimal(0));
+//		jsonObject.put("2021-12-21", 0.004);
+//		jsonObject.put("2021-12-22", new BigDecimal(5));
+//		System.out.println(jsonObject.toJSONString());
 
 	}
 

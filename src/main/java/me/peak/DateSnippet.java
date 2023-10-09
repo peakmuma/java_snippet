@@ -2,8 +2,10 @@ package me.peak;
 
 import me.peak.algo.PrintUtil;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.util.StopWatch;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -18,14 +20,9 @@ public class DateSnippet {
 
 	static WeekFields weekFields = WeekFields.of(DayOfWeek.MONDAY, 7);
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) throws Exception {
 
-		LocalDate start = LocalDate.of(2022, 1, 1);
-		LocalDate end = LocalDate.of(2022, 10, 31);
-//		LocalDate end = LocalDate.now().minusDays(1);
-		Set<String> res = getWeekAndMonth(start, end);
-		res.addAll(getWtdAndMtd());
-		PrintUtil.printStrList(res);
+//		buildCleanIoboardDateRange();
 
 //		LocalDate sameWeek = getSameWeekLastYear(date);
 //		System.out.println(date.get(weekFields.weekOfYear()));
@@ -44,6 +41,16 @@ public class DateSnippet {
 //		LocalDate start = end.minusYears(1).withDayOfMonth(1);
 //		Map<String, List<String>> noneWeekDateRangeMap = buildNoneWeekDateRangeMap(start, end);
 //		Map<String, List<String>> weekDateRangeMap = buildWeekDateRangeMap(start, end);
+	}
+
+	static void buildCleanIoboardDateRange() {
+		LocalDate start = LocalDate.of(2022, 7, 1);
+		LocalDate end = LocalDate.of(2023, 3, 6);
+//		LocalDate end = LocalDate.now().minusDays(1);
+		Set<String> res = new HashSet<>();
+		res.addAll(getWeekAndMonth(start, end));
+		res.addAll(getWtdAndMtd());
+		PrintUtil.printStrList(res);
 	}
 
 	static Map<String, List<String>> buildNoneWeekDateRangeMap(LocalDate start, LocalDate end) {
@@ -138,7 +145,7 @@ public class DateSnippet {
 	static Set<String> getDateDuration(LocalDate start, LocalDate end) {
 		Set<String> res = new TreeSet<>();
 		LocalDate curEnd = start;
-		while (end.isAfter(curEnd)) {
+		while (!end.isBefore(curEnd)) {
 			String s = start.format(DateTimeFormatter.ISO_LOCAL_DATE);
 			String e = curEnd.format(DateTimeFormatter.ISO_LOCAL_DATE);
 			res.add(s + "-" + e);

@@ -16,4 +16,8 @@ public class People {
 
     int age;
 
+    String code1;
+
+    String code2;
+
 }

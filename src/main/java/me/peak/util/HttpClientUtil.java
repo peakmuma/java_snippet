@@ -172,19 +172,25 @@ public class HttpClientUtil {
 			}
 		}
 		HttpEntity entity = new UrlEncodedFormEntity(params, Charset.forName("UTF-8"));
-		return doPost(uri, entity, socketTimeout);
+		return doPost(uri, entity, socketTimeout, null);
 	}
 
 	public String doPost(String uri, JSONObject jsonParameters) {
 		log.debug("========= Call [{}] Param {}==========", uri, jsonParameters.toJSONString());
 		HttpEntity entity = new StringEntity(jsonParameters.toJSONString(), ContentType.APPLICATION_JSON);
-		return doPost(uri, entity, defaultSocketTimeout);
+		return doPost(uri, entity, defaultSocketTimeout, null);
+	}
+
+	public String doPost(String uri, JSONObject jsonParameters, Map<String, String> headers) {
+		log.debug("========= Call [{}] Param {}==========", uri, jsonParameters.toJSONString());
+		HttpEntity entity = new StringEntity(jsonParameters.toJSONString(), ContentType.APPLICATION_JSON);
+		return doPost(uri, entity, defaultSocketTimeout, headers);
 	}
 
 	public String doPost(String uri, String paramString) {
 		log.debug("========= Call [{}] Param {}==========", uri, paramString);
 		HttpEntity entity = new StringEntity(paramString, Charset.forName("utf-8"));
-		return doPost(uri, entity, defaultSocketTimeout);
+		return doPost(uri, entity, defaultSocketTimeout, null);
 	}
 
 
@@ -265,13 +271,18 @@ public class HttpClientUtil {
 	}
 
 
-	public String doPost(String uri, HttpEntity entity, int socketTimeout) {
+	public String doPost(String uri, HttpEntity entity, int socketTimeout, Map<String, String> headers) {
 		log.debug("========= Call [{}] Start ==========", uri);
 		HttpPost request = new HttpPost(uri);
 		String json = null;
 		try {
 			request.setConfig(getConfig(socketTimeout));
 			request.setEntity(entity);
+			if (headers != null) {
+				for (String key : headers.keySet()) {
+					request.setHeader(key, headers.get(key));
+				}
+			}
 			HttpResponse response = client.execute(request);
 			log.debug("Response status code: {}", response.getStatusLine().getStatusCode());
 			log.debug("========= Call [{}] End ==========", uri);
@@ -309,7 +320,7 @@ public class HttpClientUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return doPost(httpUrl, httpPost.getEntity(), defaultSocketTimeout);
+		return doPost(httpUrl, httpPost.getEntity(), defaultSocketTimeout, null);
 	}
 
 	private RequestConfig getConfig(int socketTimeout) {
