@@ -63,10 +63,12 @@ public class SimpleTestSnippet {
 
     public static void main(String[] args) throws Exception {
 
-		String url1 = "http://10.168.25.224:8080/api/v2/domain_model/summary/build/detail";
-		String url2 = "http://10.178.81.74:8080/api/v2/domain_model/summary/build/detail";
-		String param = "{\"modelId\":134225,\"modelVersionId\":86689,\"action\":\"\"}";
-		System.out.println(compareVinciResult(url1, url2, param));
+		String url1 = "http://10.169.145.20:8080/api/v2/domain_model/summary/build/detail";
+		String url2 = "http://10.195.11.193:8080/api/v2/domain_model/summary/build/detail";
+		String param = "{\"modelId\":107807,\"modelVersionId\":87908,\"action\":\"\"}";
+		Map<String, String> header = new HashMap<>();
+		header.put("cookie", "biz_group=23649;com.sankuai.data.wanxiang.wanxiang_ssoid=eAGFjs0rRUEYxhskWemuZHWSBbccM3Nn5sxrxdXF0lcpG70zZw6Scxbn6lpYuHYsZUPJR7ck5SMWys5C-QukbHH_ACskV2Jr99TzPL9-TaTlc_etzrt-_bi_ZLzdJgt-ivH8Is75IRbRL2G8NIfxzF_o9bSlMqeoFWilAABtlcnqKBTaiEjbKP9OMl2TzoxbF7tlEVAFjPYHg7wggeVB1k6qMBBQnucFQb3Kw-bOFesk_F-w_lbtaxwu3509XrCRm4OV2yO2SrLNjaNjA0noMpmnymH1fP957fhlr1w9qVRPy60N3srVVlfnz3iDNP2KbRNfBpwzyzhyG6qIixCsMSgBrHTSAZtmCkQQgOZKKHlAOkrOLOcCBBEaIQIBAinXXGBkwERYw0jqpjxHQWtmnDFZFJir8SLFahUwJSWPcJW09SS4WJzlPu1Ba12adheTeRf7Q4WJdVKfpskXzuaH6g**eAEFwQERADEIAzBLUMpD5ez44V_CEi1rmMLdatPE8UMGamSVER_auiawgt9jzB9GseipNT0LZg-4**VXAqq2_r9zCu_yt2uFBQnHhkqAniDZNQi_aFU6riQaoIU95npu9Nn7ZZeQ4kJ2YtGqGgl_9xFbLWQr6cLXJlaA**NjE5NzI0NixnYW9sZWkzMyzpq5jno4osZ2FvbGVpMzNAbWVpdHVhbi5jb20sMSwwMzI1MDMzMCwxNjk3NzcwMzIyNDkx");
+		System.out.println(compareVinciResult(url1, url2, param, header));
 
 //		System.out.println(LocalDate.now().minusDays(60).toString());
 
@@ -278,10 +280,8 @@ public class SimpleTestSnippet {
 //		Executors.newCachedThreadPool();
 	}
 
-	private static boolean compareVinciResult(String url1, String url2, String paramStr) {
+	private static boolean compareVinciResult(String url1, String url2, String paramStr, Map<String, String> header) {
 		JSONObject param = JSONObject.parseObject(paramStr);
-		Map<String, String> header = new HashMap<>();
-		header.put("cookie", "biz_group=23649;com.sankuai.data.wanxiang.wanxiang_ssoid=eAGFjr9LgkEch3ktRBoinBpfokEd5O783r13TaUYjf2CoCXu7r0TkV6H17DBQYWCopY2WyoRJILKIWhoamipf6NydS2QjKi17TM8n4cn5kwNzz4i7uBh77mHyYwub6dDGZR2ZDHty4pMV2WwW5RB4W_MuVwjmmFIg9QUhBBcM5Xi1geuwHJts59OPLlh1Jo2gamBh5jAaMFbJHkqcFbQ0Ynlcx4iWZIH5B7vD4_ucCJC_hXz79T56FJ30Hq5xcuP7frTJW46qYnoymqu7Jt4_LXT7fcu3g6u3s8b_etO_6YxPe7W71vJxA984sR-w06dNPUIwRoTSbTPLAFfaKUkFUJTQ43AW5gJ8DzBCQNG285s1ahaxpMCfAXggQCJCCcgrRLKypGGIrPpWpSxgIjlLIXAMK5GKsq5osxnWHHddCYLprKgtQnD9XLJBIfOWBiWvwDARIP2**eAEVw4ENACEIBLCVBHzAceA89h_BfJPGkAVMr6o8tgn1IGIoWV_ib4XuEGWPaXosiuk-N3zdB38cEqY**r-q31rFlrPChIYgzbkA6YYhgzr47ohDqnBJyLIpLJP5wsLoMtqHuC26fGa7gyjoIxXnTNVpQdDJZRJwy8kjzXg**NjE5NzI0NixnYW9sZWkzMyzpq5jno4osZ2FvbGVpMzNAbWVpdHVhbi5jb20sMSwwMzI1MDMzMCwxNjk2OTM3ODkzNDg5");
 		String res1 = HttpClientUtil.getInstance().doPost(url1, param, header);
 		String res2 = HttpClientUtil.getInstance().doPost(url2, param, header);
 		JSONObject resJson = JSONObject.parseObject(res1);
@@ -289,7 +289,19 @@ public class SimpleTestSnippet {
 			System.out.println("failed");
 			return false;
 		}
-		return res1.equals(res2);
+//		return res1.equals(res2);
+		return compareEtl(res1, res2);
+	}
+
+	private static boolean compareEtl(String res1, String res2) {
+		JSONObject json1 = JSONObject.parseObject(res1);
+		JSONObject json2 = JSONObject.parseObject(res2);
+		String etl1 = json1.getJSONObject("data").getJSONObject("buildEtlInfo").getJSONObject("etlInfo").getString("etlCode");
+		String etl2 = json2.getJSONObject("data").getJSONObject("buildEtlInfo").getJSONObject("etlInfo").getString("etlCode");
+		System.out.println(etl1);
+		System.out.println(etl2);
+		return etl1.equals(etl2);
+
 	}
 
 	private static List<String> generateDimConfigStrs(List<String> metricConfigList) {

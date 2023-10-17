@@ -40,7 +40,7 @@ public class HttpClientUtil {
 	 * Default: {@code -1}
 	 * </p>
 	 */
-	private int defaultSocketTimeout = 10000;
+	private int defaultSocketTimeout = 20000;
 
 	/**
 	 * Determines the timeout in milliseconds until a connection is established.
