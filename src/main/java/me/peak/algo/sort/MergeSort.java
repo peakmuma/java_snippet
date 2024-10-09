@@ -1,6 +1,8 @@
-package me.peak.algo;
+package me.peak.algo.sort;
 
-public class Sort {
+import me.peak.algo.PrintUtil;
+
+public class MergeSort {
     public static void main(String[] args) {
         int[] nums = new int[] {5,6,4,3,7,8,11,-1,5,7,0};
         mergeSort(nums);
@@ -45,14 +47,4 @@ public class Sort {
         System.arraycopy(temp, start1, num, start1, end + 1 - start1);
     }
 
-
-
-
-    public static void quickSort(int[] nums) {
-
-    }
-
-    public static void heapSort(int[] nums) {
-
-    }
 }
