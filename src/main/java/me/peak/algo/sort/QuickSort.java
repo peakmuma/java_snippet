@@ -1,15 +1,15 @@
 package me.peak.algo.sort;
 
 /**
- * 快速排序，参考 https://blog.csdn.net/Alian_1223/article/details/123036590
+ * 快速排序，参考 <a href="https://blog.csdn.net/Alian_1223/article/details/123036590">代码</a>
  */
 public class QuickSort {
 
     public static void main(String[] args) {
-        int nums[] = new int[]{3,7,8,21,3,5,1,6};
+        int[] nums = new int[]{3,7,8,21,3,5,1,6};
         qSort(nums);
-        for (int i = 0; i < nums.length; i++) {
-            System.out.print(nums[i] + ",");
+        for (int num : nums) {
+            System.out.print(num + ",");
         }
     }
 
