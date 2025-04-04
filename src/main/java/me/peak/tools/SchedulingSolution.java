@@ -5,11 +5,12 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class SchedulingSolution {
-    private static final int DAYS_IN_MONTH = 32;
 
     public static class ScheduleResult {
         int[] schedule;
         double score;
+        double[] dayOfWeekVariance;
+        double[] intervalVariance;
 
         public ScheduleResult(int[] schedule, double score) {
             this.schedule = schedule.clone();
@@ -24,7 +25,7 @@ public class SchedulingSolution {
         //将availableDays转换为具体日期
         Map<Integer, Set<Integer>> availableDates = convertToAvailableDates(year, month, availableWeekDays);
 
-        // 计算需要排班的人员可用性
+        // 计算需要排班的人员剩余可使用天数
         int[] remainDayCounts = dayCountLimits.clone();
         for (int i = 1; i < schedule.length; i++) {
             if (schedule[i] > 0) {
@@ -37,7 +38,7 @@ public class SchedulingSolution {
 
         // 计算所有排班的分数
         for (ScheduleResult result : results) {
-            result.score = calculateScore(year, month, result.schedule, availableWeekDays, unwillingDays);
+            calculateAndSetScore(result, year, month, availableWeekDays, unwillingDays);
         }
 
         // 按分数从高到低排序并返回前10个
@@ -89,7 +90,7 @@ public class SchedulingSolution {
         }
     }
 
-    private double calculateScore(int year, int month, int[] schedule, Map<Integer, int[]> availableWeekDays,
+    private double calculateAndSetScore(ScheduleResult result, int year, int month, Map<Integer, int[]> availableWeekDays,
                                   Map<Integer, int[]> unwillingDays) {
         double score = 10000;
         LocalDate date = LocalDate.of(year, month, 1);
@@ -97,7 +98,7 @@ public class SchedulingSolution {
 
         // 检查不愿意值班的情况
         for (int day = 1; day <= daysInMonth; day++) {
-            int person = schedule[day];
+            int person = result.schedule[day];
             if (person > 0 && unwillingDays.containsKey(person)) {
                 int[] unwilling = unwillingDays.get(person);
                 for (int unwillingDay : unwilling) {
@@ -110,38 +111,64 @@ public class SchedulingSolution {
         }
 
         // 检查连续值班
-        for (int day = 1; day < daysInMonth; day++) {
-            if (schedule[day] > 0 && schedule[day] == schedule[day + 1]) {
-                score -= 100;
-            }
-        }
+//        for (int day = 1; day < daysInMonth; day++) {
+//            if (result.schedule[day] > 0 && result.schedule[day] == result.schedule[day + 1]) {
+//                score -= 100;
+//            }
+//        }
 
-        // 计算周分布方差
-        Map<Integer, int[]> weekDist = new HashMap<>();
+        // 计算分布在周几的方差 和 分布在哪一周的方差
+        Map<Integer, int[]> dayOfWeekDistMap = new HashMap<>();
+        Map<Integer, List<Integer>> intervalsMap = new HashMap<>();
+        // Map存储每个员工的上一次值班日期
+        Map<Integer, Integer> lastDutyDay = new HashMap<>();
         int[] totalCounts = new int[availableWeekDays.size() + 1];
         for (int day = 1; day <= daysInMonth; day++) {
-            int person = schedule[day];
+            int person = result.schedule[day];
             if (person > 0) {
                 totalCounts[person]++;
-                int weekday = date.withDayOfMonth(day).getDayOfWeek().getValue();
-                weekDist.computeIfAbsent(person, k -> new int[8])[weekday]++;
-            }
+                date = date.withDayOfMonth(day);
+                int weekday = date.getDayOfWeek().getValue();
+                dayOfWeekDistMap.computeIfAbsent(person, k -> new int[8])[weekday]++;
+
+                // 如果该员工之前有值班记录，计算间隔
+                if (lastDutyDay.containsKey(person)) {
+                    int interval = day - lastDutyDay.get(person);
+                    intervalsMap.computeIfAbsent(person, k -> new ArrayList<>()).add(interval);
+                }
+                // 更新该员工的最近值班日期
+                lastDutyDay.put(person, day);            }
         }
 
-        double varianceSum = 0;
-        for (int person = 1; person <= availableWeekDays.size(); person++) {
-            int[] dist = weekDist.getOrDefault(person, new int[8]);
+        int personCount = availableWeekDays.size();
+        result.dayOfWeekVariance = new double[personCount + 1];
+        result.intervalVariance = new double[personCount + 1];
+        for (int person = 1; person <= personCount; person++) {
+            // 计算周几的方差
+            int[] dayOfWeekDist = dayOfWeekDistMap.getOrDefault(person, new int[8]);
             int[] availableWeekDay = availableWeekDays.get(person);
-            double avg = (double) totalCounts[person] / availableWeekDay.length;
-
+            double avgDayCountOfWeek = (double) totalCounts[person] / availableWeekDay.length;
             double variance = 0;
             for (int dayOfWeek : availableWeekDay) {
-                variance += Math.pow(dist[dayOfWeek] - avg, 2);
+                variance += Math.pow(dayOfWeekDist[dayOfWeek] - avgDayCountOfWeek, 2);
             }
-            varianceSum += variance / availableWeekDay.length;
+            double varianceSum = variance / availableWeekDay.length;
+            result.dayOfWeekVariance[person] = varianceSum;
+            //计算完后减去分数
+            score -= varianceSum * 10;
+            // 计算在哪一周的方差
+            List<Integer> intervals = intervalsMap.getOrDefault(person, Collections.emptyList());
+            double avgInterval = (double) daysInMonth / totalCounts[person];
+            variance = 0;
+            for (int interval : intervals) {
+                variance += Math.pow(interval - avgInterval, 2);
+            }
+            varianceSum = variance / intervals.size();
+            result.intervalVariance[person] = varianceSum;
+            //计算完后减去分数
+            score -= varianceSum * 20; //权重更高一点
         }
-        score -= varianceSum * 10;
-
+        result.score = score;
         return score;
     }
 
@@ -201,6 +228,8 @@ public class SchedulingSolution {
                         System.out.print(", ");
                     }
                 }
+                System.out.print("   周几方差是: " + result.dayOfWeekVariance[i]);
+                System.out.print("   日期方差是: " + result.intervalVariance[i]);
                 System.out.println();
             }
         }
