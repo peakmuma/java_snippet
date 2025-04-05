@@ -12,15 +12,15 @@ public class SchedulingSolution {
         double[] dayOfWeekVariance;
         double[] intervalVariance;
 
-        public ScheduleResult(int[] schedule, double score) {
+        public ScheduleResult(int[] schedule) {
             this.schedule = schedule.clone();
-            this.score = score;
         }
     }
 
     public List<ScheduleResult> generateAllSchedules(int year, int month, int[] schedule, int[] dayCountLimits,
                                                      Map<Integer, int[]> availableWeekDays, Map<Integer, int[]> unwillingDays) {
-        List<ScheduleResult> results = new ArrayList<>();
+        // 将results声明成小顶堆，按照score字段排序
+        PriorityQueue<ScheduleResult> resultQueue = new PriorityQueue<>(Comparator.comparingDouble(a -> a.score));
 
         //将availableDays转换为具体日期
         Map<Integer, Set<Integer>> availableDates = convertToAvailableDates(year, month, availableWeekDays);
@@ -34,14 +34,10 @@ public class SchedulingSolution {
         }
 
         // 生成所有可能的排班
-        generateSchedulesRecursive(schedule, 1, remainDayCounts, availableDates, results);
+        generateSchedulesRecursive(schedule, 1, remainDayCounts, availableDates, year, month, availableWeekDays, unwillingDays, resultQueue);
 
-        // 计算所有排班的分数
-        for (ScheduleResult result : results) {
-            calculateAndSetScore(result, year, month, availableWeekDays, unwillingDays);
-        }
-
-        // 按分数从高到低排序并返回前10个
+        // 按分数从高到低排序并返回
+        List<ScheduleResult> results = new ArrayList<>(resultQueue);
         results.sort((a, b) -> Double.compare(b.score, a.score));
         return results.size() > 10 ? results.subList(0, 10) : results;
     }
@@ -68,21 +64,32 @@ public class SchedulingSolution {
         return availableDates;
     }
 
-    private void generateSchedulesRecursive(int[] schedule, int day, int[] remainDayCounts,
-                                            Map<Integer, Set<Integer>> availableDates, List<ScheduleResult> results) {
+    private void generateSchedulesRecursive(int[] schedule, int day, int[] remainDayCounts, Map<Integer, Set<Integer>> availableDates,
+                                            int year, int month, Map<Integer, int[]> availableWeekDays, Map<Integer, int[]> unwillingDays,
+                                            PriorityQueue<ScheduleResult> results) {
         if (day == schedule.length) {
-            results.add(new ScheduleResult(schedule, 0));
+            ScheduleResult result = new ScheduleResult(schedule);
+            calculateAndSetScore(result, year, month, availableWeekDays, unwillingDays);
+            if (results.size() < 10) {
+                results.add(result);
+            } else if (result.score > results.peek().score) {
+                results.poll();
+                results.add(result);
+            }
             return;
         }
 
         if (schedule[day] != 0 ) {
-            generateSchedulesRecursive( schedule, day + 1, remainDayCounts, availableDates, results);
+            generateSchedulesRecursive( schedule, day + 1, remainDayCounts, availableDates, year, month, availableWeekDays, unwillingDays, results);
         } else {
             for (int staff = 1;  staff < remainDayCounts.length; staff++) {
-                if (remainDayCounts[staff] > 0 && availableDates.containsKey(staff) && availableDates.get(staff).contains(day)) {
+                if (remainDayCounts[staff] > 0 &&
+                        availableDates.containsKey(staff) && availableDates.get(staff).contains(day)
+                        && (day == 1 || schedule[day - 1] != staff)
+                ) {
                     schedule[day] = staff;
                     remainDayCounts[staff]--;
-                    generateSchedulesRecursive( schedule, day + 1, remainDayCounts, availableDates, results);
+                    generateSchedulesRecursive( schedule, day + 1, remainDayCounts, availableDates, year, month, availableWeekDays, unwillingDays, results);
                     remainDayCounts[staff]++;
                     schedule[day] = 0;
                 }
@@ -90,8 +97,8 @@ public class SchedulingSolution {
         }
     }
 
-    private double calculateAndSetScore(ScheduleResult result, int year, int month, Map<Integer, int[]> availableWeekDays,
-                                  Map<Integer, int[]> unwillingDays) {
+    private void calculateAndSetScore(ScheduleResult result, int year, int month, Map<Integer, int[]> availableWeekDays,
+                                      Map<Integer, int[]> unwillingDays) {
         double score = 10000;
         LocalDate date = LocalDate.of(year, month, 1);
         int daysInMonth = date.lengthOfMonth();
@@ -110,14 +117,7 @@ public class SchedulingSolution {
             }
         }
 
-        // 检查连续值班
-//        for (int day = 1; day < daysInMonth; day++) {
-//            if (result.schedule[day] > 0 && result.schedule[day] == result.schedule[day + 1]) {
-//                score -= 100;
-//            }
-//        }
-
-        // 计算分布在周几的方差 和 分布在哪一周的方差
+        //计算分布在周几的方差 和 日期间隔的方差
         Map<Integer, int[]> dayOfWeekDistMap = new HashMap<>();
         Map<Integer, List<Integer>> intervalsMap = new HashMap<>();
         // Map存储每个员工的上一次值班日期
@@ -156,7 +156,7 @@ public class SchedulingSolution {
             result.dayOfWeekVariance[person] = varianceSum;
             //计算完后减去分数
             score -= varianceSum * 10;
-            // 计算在哪一周的方差
+            //日期间隔的方差
             List<Integer> intervals = intervalsMap.getOrDefault(person, Collections.emptyList());
             double avgInterval = (double) daysInMonth / totalCounts[person];
             variance = 0;
@@ -169,20 +169,19 @@ public class SchedulingSolution {
             score -= varianceSum * 20; //权重更高一点
         }
         result.score = score;
-        return score;
     }
 
     private static String[] STAFF_NAMES = new String[]{"未排班", "刘", "苑", "黄", "杜", "陈"};
 
     private static String getChineseDayOfWeek(DayOfWeek dayOfWeek) {
         switch (dayOfWeek) {
-            case MONDAY: return "星期一";
-            case TUESDAY: return "星期二";
-            case WEDNESDAY: return "星期三";
-            case THURSDAY: return "星期四";
-            case FRIDAY: return "星期五";
-            case SATURDAY: return "星期六";
-            case SUNDAY: return "星期日";
+            case MONDAY: return "一";
+            case TUESDAY: return "二";
+            case WEDNESDAY: return "三";
+            case THURSDAY: return "四";
+            case FRIDAY: return "五";
+            case SATURDAY: return "六";
+            case SUNDAY: return "日";
             default: return "";
         }
     }
@@ -228,8 +227,8 @@ public class SchedulingSolution {
                         System.out.print(", ");
                     }
                 }
-                System.out.print("   周几方差是: " + result.dayOfWeekVariance[i]);
-                System.out.print("   日期方差是: " + result.intervalVariance[i]);
+                System.out.printf("   周几方差是: %.2f", result.dayOfWeekVariance[i]);
+                System.out.printf("   日期方差是: %.2f", result.intervalVariance[i]);
                 System.out.println();
             }
         }
@@ -259,7 +258,9 @@ public class SchedulingSolution {
         int[] schedule = new int[daysInMonth + 1];
         schedule[1] = 5; schedule[2] = 2; schedule[3] = 1; schedule[4] = -1; schedule[5] = 1; schedule[6] = 2;
 
-        int[] dayCountLimits = new int[]{0, 6, 6, 5, 6, 6};
+//        int[] dayCountLimits = new int[]{0, 6, 6, 5, 6, 6};
+        int[] dayCountLimits = new int[]{0, 8, 7, 2, 6, 6};
+
         Map<Integer, int[]> availableWeekDays = new HashMap<>();
         availableWeekDays.put(1, new int[]{2, 3, 4, 5, 6});
         availableWeekDays.put(2, new int[]{2, 3, 5, 7});
