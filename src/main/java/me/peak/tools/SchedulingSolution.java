@@ -228,7 +228,7 @@ public class SchedulingSolution {
                     }
                 }
                 System.out.printf("   周几方差是: %.2f", result.dayOfWeekVariance[i]);
-                System.out.printf("   日期方差是: %.2f", result.intervalVariance[i]);
+                System.out.printf("   值班日间隔方差是: %.2f", result.intervalVariance[i]);
                 System.out.println();
             }
         }
@@ -247,6 +247,7 @@ public class SchedulingSolution {
     }
 
     public static void main(String[] args) {
+        Runtime runtime = Runtime.getRuntime();
         SchedulingSolution solution = new SchedulingSolution();
 
         int year = 2025;
@@ -277,12 +278,18 @@ public class SchedulingSolution {
         long end = System.currentTimeMillis();
 
         System.out.println("Total time: " + (end - start) + "ms");
+        System.out.println("Total schedules generated: " + results.size());
 
         // 输出前10个结果
         for (int i = 0; i < results.size(); i++) {
             solution.printMonthlyView(year, month, results.get(i));
         }
 
-        System.out.println("Total schedules generated: " + results.size());
+        long maxMemory = runtime.maxMemory(); // 最大内存
+        long totalMemory = runtime.totalMemory(); // 已分配内存
+        long freeMemory = runtime.freeMemory(); // 空闲内存
+        System.out.println("Max: " + maxMemory / 1024 / 1024 + "MB");
+        System.out.println("Total: " + totalMemory / 1024 / 1024 + "MB");
+        System.out.println("Free: " + freeMemory / 1024 / 1024 + "MB");
     }
 }
