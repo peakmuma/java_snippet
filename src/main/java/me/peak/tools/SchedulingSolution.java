@@ -2,6 +2,7 @@ package me.peak.tools;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class SchedulingSolution {
@@ -158,6 +159,9 @@ public class SchedulingSolution {
             score -= varianceSum * 10;
             //日期间隔的方差
             List<Integer> intervals = intervalsMap.getOrDefault(person, Collections.emptyList());
+            if (intervals.isEmpty()) {
+                continue;
+            }
             double avgInterval = (double) daysInMonth / totalCounts[person];
             variance = 0;
             for (int interval : intervals) {
@@ -186,7 +190,64 @@ public class SchedulingSolution {
         }
     }
 
-    private void printMonthlyView(int year, int month, ScheduleResult result) {
+//    String status = result.schedule[statusIndex] > 0 ? STAFF_NAMES[result.schedule[statusIndex]] : "假   ";
+
+    private void printMonthly(int year, int month, ScheduleResult result) {
+        //按日期输出
+        System.out.println("-------------------");
+        System.out.println("按日期的排班表：");
+        // 固定前置距离
+        final String PREFIX = "               ";
+
+        // 获取当月第一天
+        LocalDate firstDay = LocalDate.of(year, month, 1);
+
+        // 打印表头
+        System.out.println(PREFIX + "一   二   三   四   五   六   日");
+
+        // 初始化变量
+        LocalDate currentDate = firstDay;
+        LocalDate weekStart = firstDay;
+        StringBuilder weekStatus = new StringBuilder();
+        int day = 1;
+
+        // 中文日期格式
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M.dd");
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M.d", Locale.CHINA);
+
+        // 如果1号不是周一，填充空格
+        int dayOfWeek = firstDay.getDayOfWeek().getValue(); // 周一=1, 周日=7
+        for (int i = 1; i < dayOfWeek; i++) {
+            weekStatus.append("\u3000\u3000\u3000"); // 空日补字符
+        }
+
+        // 遍历当月每一天
+        while (currentDate.getMonthValue() == month) {
+            // 获取当前天的状态
+            String status = result.schedule[day] >= 0 ? STAFF_NAMES[result.schedule[day]] : "休  ";
+            weekStatus.append(String.format("%-3s ", status)); // 状态占3字符+1空格
+            day++;
+
+            // 如果是周日或月末，打印当前周
+            if (currentDate.getDayOfWeek().getValue() == 7 || currentDate.plusDays(1).getMonthValue() != month) {
+                // 格式化周范围
+                String weekRange = String.format("%s ~ %s",
+                        weekStart.format(formatter),
+                        currentDate.format(formatter));
+
+                // 打印周范围和状态
+                System.out.printf("%-14s %s%n", weekRange, weekStatus);
+
+                // 重置下一周
+                weekStatus = new StringBuilder();
+                weekStart = currentDate.plusDays(1);
+            }
+
+            currentDate = currentDate.plusDays(1);
+        }
+    }
+
+    private void printScore(int year, int month, ScheduleResult result) {
         System.out.println("====================================================");
         System.out.printf("Schedule (Score: %.2f):\n", result.score);
 
@@ -232,18 +293,6 @@ public class SchedulingSolution {
                 System.out.println();
             }
         }
-
-        // 第二部分：按日期输出
-        System.out.println("-------------------");
-        System.out.println("按日期的排班表：");
-        System.out.println("日期\t星期\t值班人员");
-        System.out.println("-------------------");
-        for (int day = 1; day < result.schedule.length; day++) {
-            LocalDate currentDate = baseDate.plusDays(day - 1);
-            DayOfWeek dayOfWeek = currentDate.getDayOfWeek();
-            String staffName = result.schedule[day] <0 ? "休" : STAFF_NAMES[result.schedule[day]];
-            System.out.printf("%d\t%s\t%s%n", day, getChineseDayOfWeek(dayOfWeek), staffName);
-        }
     }
 
     public static void main(String[] args) {
@@ -258,14 +307,16 @@ public class SchedulingSolution {
 
         int[] schedule = new int[daysInMonth + 1];
         schedule[1] = 5; schedule[2] = 2; schedule[3] = 1; schedule[4] = -1; schedule[5] = 1; schedule[6] = 2;
+        schedule[7] = 5; schedule[8] = 2; schedule[9] = 4; schedule[10] = 5; schedule[11] = 1; schedule[12] = 1; schedule[13] = 2;
+        schedule[27] = 3;
 
 //        int[] dayCountLimits = new int[]{0, 6, 6, 5, 6, 6};
-        int[] dayCountLimits = new int[]{0, 8, 7, 2, 6, 6};
+        int[] dayCountLimits = new int[]{0, 7, 7, 1, 7, 7};
 
         Map<Integer, int[]> availableWeekDays = new HashMap<>();
         availableWeekDays.put(1, new int[]{2, 3, 4, 5, 6});
         availableWeekDays.put(2, new int[]{2, 3, 5, 7});
-        availableWeekDays.put(3, new int[]{2, 3, 5});
+        availableWeekDays.put(3, new int[]{6,7});
         availableWeekDays.put(4, new int[]{1, 3, 4});
         availableWeekDays.put(5, new int[]{1, 2, 3, 4, 5});
 
@@ -282,7 +333,8 @@ public class SchedulingSolution {
 
         // 输出前10个结果
         for (int i = 0; i < results.size(); i++) {
-            solution.printMonthlyView(year, month, results.get(i));
+            solution.printScore(year, month, results.get(i));
+            solution.printMonthly(year, month, results.get(i));
         }
 
         long maxMemory = runtime.maxMemory(); // 最大内存
