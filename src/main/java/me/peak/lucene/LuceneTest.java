@@ -40,7 +40,7 @@ public class LuceneTest {
 			Query query = queryParser.parse(queryStr);
 			TopDocs results = searcher.search(query, 10);
 			ScoreDoc[] hits = results.scoreDocs;
-			int numTotalHits = Math.toIntExact(results.totalHits);
+			int numTotalHits = Math.toIntExact(results.totalHits.value);
 			System.out.println(numTotalHits + " total matching documents");
 			for (int i = 0; i < hits.length; i++) {
 				Document doc = searcher.doc(hits[i].doc);
