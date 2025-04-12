@@ -124,7 +124,7 @@ public class SchedulingSolution {
         // Map存储每个员工的上一次值班日期
         Map<Integer, Integer> lastDutyDay = new HashMap<>();
         int[] totalCounts = new int[availableWeekDays.size() + 1];
-        for (int day = 1; day <= daysInMonth; day++) {
+        for (int day = 13; day <= daysInMonth; day++) {
             int person = result.schedule[day];
             if (person > 0) {
                 totalCounts[person]++;
@@ -156,7 +156,7 @@ public class SchedulingSolution {
             double varianceSum = variance / availableWeekDay.length;
             result.dayOfWeekVariance[person] = varianceSum;
             //计算完后减去分数
-            score -= varianceSum * 10;
+            score -= varianceSum * 20;
             //日期间隔的方差
             List<Integer> intervals = intervalsMap.getOrDefault(person, Collections.emptyList());
             if (intervals.isEmpty()) {
@@ -170,7 +170,7 @@ public class SchedulingSolution {
             varianceSum = variance / intervals.size();
             result.intervalVariance[person] = varianceSum;
             //计算完后减去分数
-            score -= varianceSum * 20; //权重更高一点
+            score -= varianceSum * 20;
         }
         result.score = score;
     }
@@ -218,7 +218,8 @@ public class SchedulingSolution {
         // 如果1号不是周一，填充空格
         int dayOfWeek = firstDay.getDayOfWeek().getValue(); // 周一=1, 周日=7
         for (int i = 1; i < dayOfWeek; i++) {
-            weekStatus.append("\u3000\u3000\u3000"); // 空日补字符
+//            weekStatus.append("\u3000\u3000\u3000"); // 空日补字符
+            weekStatus.append("   \u3000"); // 空日补字符
         }
 
         // 遍历当月每一天
@@ -310,18 +311,19 @@ public class SchedulingSolution {
         schedule[7] = 5; schedule[8] = 2; schedule[9] = 4; schedule[10] = 5; schedule[11] = 1; schedule[12] = 1; schedule[13] = 2;
         schedule[27] = 3;
 
-//        int[] dayCountLimits = new int[]{0, 6, 6, 5, 6, 6};
         int[] dayCountLimits = new int[]{0, 7, 7, 1, 7, 7};
+//        int[] dayCountLimits = new int[]{0, 7, 8, 2, 7, 7};
 
         Map<Integer, int[]> availableWeekDays = new HashMap<>();
         availableWeekDays.put(1, new int[]{2, 3, 4, 5, 6});
         availableWeekDays.put(2, new int[]{2, 3, 5, 7});
-        availableWeekDays.put(3, new int[]{6,7});
+        availableWeekDays.put(3, new int[]{6, 7});
         availableWeekDays.put(4, new int[]{1, 3, 4});
         availableWeekDays.put(5, new int[]{1, 2, 3, 4, 5});
 
         Map<Integer, int[]> unwillingDays = new HashMap<>();
         unwillingDays.put(1, new int[]{8, 15, 22, 29});
+//        unwillingDays.put(1, new int[]{6, 13, 20, 27});
 
         long start = System.currentTimeMillis();
         List<ScheduleResult> results = solution.generateAllSchedules(year, month, schedule, dayCountLimits,
