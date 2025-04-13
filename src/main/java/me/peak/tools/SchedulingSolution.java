@@ -124,7 +124,7 @@ public class SchedulingSolution {
         // Map存储每个员工的上一次值班日期
         Map<Integer, Integer> lastDutyDay = new HashMap<>();
         int[] totalCounts = new int[availableWeekDays.size() + 1];
-        for (int day = 13; day <= daysInMonth; day++) {
+        for (int day = 1; day <= daysInMonth; day++) {
             int person = result.schedule[day];
             if (person > 0) {
                 totalCounts[person]++;
@@ -301,18 +301,19 @@ public class SchedulingSolution {
         SchedulingSolution solution = new SchedulingSolution();
 
         int year = 2025;
-        int month = 4;
+        int month = 5;
 
         LocalDate baseDate = LocalDate.of(year, month, 1);
         int daysInMonth = baseDate.lengthOfMonth();
 
         int[] schedule = new int[daysInMonth + 1];
-        schedule[1] = 5; schedule[2] = 2; schedule[3] = 1; schedule[4] = -1; schedule[5] = 1; schedule[6] = 2;
-        schedule[7] = 5; schedule[8] = 2; schedule[9] = 4; schedule[10] = 5; schedule[11] = 1; schedule[12] = 1; schedule[13] = 2;
-        schedule[27] = 3;
+//        schedule[1] = 5; schedule[2] = 2; schedule[3] = 1; schedule[4] = -1; schedule[5] = 1; schedule[6] = 2;
+//        schedule[7] = 5; schedule[8] = 2; schedule[9] = 4; schedule[10] = 5; schedule[11] = 1; schedule[12] = 1; schedule[13] = 2;
+//        schedule[20] = 3;
+        schedule[1] = -1; schedule[2] = -1; schedule[3] = -1; schedule[4] = -1; schedule[5] = -1;
 
-        int[] dayCountLimits = new int[]{0, 7, 7, 1, 7, 7};
-//        int[] dayCountLimits = new int[]{0, 7, 8, 2, 7, 7};
+//        int[] dayCountLimits = new int[]{0, 8, 7, 1, 6, 7};
+        int[] dayCountLimits = new int[]{0, 6, 6, 2, 6, 6};
 
         Map<Integer, int[]> availableWeekDays = new HashMap<>();
         availableWeekDays.put(1, new int[]{2, 3, 4, 5, 6});
@@ -322,8 +323,8 @@ public class SchedulingSolution {
         availableWeekDays.put(5, new int[]{1, 2, 3, 4, 5});
 
         Map<Integer, int[]> unwillingDays = new HashMap<>();
-        unwillingDays.put(1, new int[]{8, 15, 22, 29});
-//        unwillingDays.put(1, new int[]{6, 13, 20, 27});
+//        unwillingDays.put(1, new int[]{8, 15, 22, 29});
+        unwillingDays.put(1, new int[]{6, 13, 20, 27});
 
         long start = System.currentTimeMillis();
         List<ScheduleResult> results = solution.generateAllSchedules(year, month, schedule, dayCountLimits,
