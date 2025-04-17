@@ -47,6 +47,11 @@
             <artifactId>cas-client-support-springboot</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-access</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

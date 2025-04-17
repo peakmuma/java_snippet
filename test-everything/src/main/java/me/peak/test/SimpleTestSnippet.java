@@ -1,8 +1,8 @@
 package me.peak.test;
 
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import me.peak.utils.HttpClientUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
